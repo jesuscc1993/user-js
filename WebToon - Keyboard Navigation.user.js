@@ -8,7 +8,7 @@
 // @include        https://www.webtoons.com*
 // @namespace      https://github.com/jesuscc1993/user-js
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
-// @require        https://greasyfork.org/scripts/396703-key-navigation/code/Key%20navigation.js
+// @require        https://raw.githubusercontent.com/jesuscc1993/user-js/master/libraries/key-navigation.js
 // ==/UserScript==
 
 /* globals setUpKeyNavigation jQuery */

@@ -10,7 +10,7 @@
 // @icon           https://dl.dropbox.com/s/4mnevtuyvt1eden/48.png
 // @namespace      https://github.com/jesuscc1993/user-js
 // @require        http://code.jquery.com/jquery-3.2.1.min.js
-// @require        https://greasyfork.org/scripts/396703-key-navigation/code/Key%20navigation.js
+// @require        https://raw.githubusercontent.com/jesuscc1993/user-js/master/libraries/key-navigation.js
 // ==/UserScript==
 
 /* globals jQuery */
