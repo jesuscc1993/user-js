@@ -41,6 +41,6 @@
     }
   };
 
-  setInterval(() => handleButtonPresence(), 150);
+  setInterval(handleButtonPresence, 150);
 
 })();
