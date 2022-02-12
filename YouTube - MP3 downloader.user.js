@@ -2,7 +2,7 @@
 // @name           YouTube - MP3 downloader
 // @description    Adds a "Download as MP3" button to the "watch video" page
 // @author         MetalTxus
-// @version        1.1.0
+// @version        1.1.1
 
 // @icon           https://www.youtube.com/favicon.ico
 // @include        https://www.youtube.com*
@@ -15,7 +15,9 @@
 (() => {
   'use strict';
 
-  let intervalId;
+  const shouldRender = () => {
+    return location.href.includes('watch?');
+  }
 
   const downloadVideo = () => {
     window.open(location.href.split('&')[0].replace('https://www.youtube.com/watch?v=', 'https://320ytmp3.com/en36/download?type=ytmp3&url='));
@@ -26,15 +28,19 @@
       Download MP3
     </tp-yt-paper-button>
   `);
-  buttonElement.click(downloadVideo);
 
-  const addButton = () => {
-    const subscribeButton = jQuery('#meta-contents #subscribe-button');
-    if (subscribeButton.length && !jQuery('#meta-contents').find(buttonElement).length) {
-      subscribeButton.before(buttonElement);
-      clearInterval(intervalId);
+  const handleButtonPresence = () => {
+    if (shouldRender()) {
+      const subscribeButton = jQuery('#meta-contents #subscribe-button');
+      if (subscribeButton.length && !jQuery('#meta-contents').find(buttonElement).length) {
+        buttonElement.click(downloadVideo);
+        subscribeButton.before(buttonElement);
+      }
+    } else {
+      buttonElement.remove();
     }
   };
 
-  intervalId = setInterval(() => addButton(), 150);
+  setInterval(() => handleButtonPresence(), 150);
+
 })();
