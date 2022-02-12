@@ -5,7 +5,7 @@
 // @version        1.0.0
 
 // @icon           https://www.youtube.com/favicon.ico
-// @match          https://www.youtube.com/feed/subscriptions
+// @include        https://www.youtube.com*
 // @namespace      https://github.com/jesuscc1993/user-js
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
