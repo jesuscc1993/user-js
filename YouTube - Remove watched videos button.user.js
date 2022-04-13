@@ -2,10 +2,10 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched videos from the subscription page
 // @author         MetalTxus
-// @version        1.0.2
+// @version        1.0.3
 
 // @icon           https://www.youtube.com/favicon.ico
-// @include        https://www.youtube.com*
+// @match          https://www.youtube.com/*
 // @namespace      https://github.com/jesuscc1993/user-js
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==

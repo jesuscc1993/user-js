@@ -5,7 +5,7 @@
 // @version        1.0.0
 
 // @icon           https://webtoons-static.pstatic.net/image/favicon/favicon.ico
-// @include        https://www.webtoons.com*
+// @match          https://www.webtoons.com/*
 // @namespace      https://github.com/jesuscc1993/user-js
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // @require        https://raw.githubusercontent.com/jesuscc1993/user-js/master/libraries/key-navigation.js
