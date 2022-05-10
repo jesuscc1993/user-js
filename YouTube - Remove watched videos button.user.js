@@ -2,7 +2,7 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched videos from the subscription page
 // @author         MetalTxus
-// @version        1.0.3
+// @version        1.0.4
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -16,11 +16,12 @@
   'use strict';
 
   const shouldRender = () => {
-    return location.href.includes('/subscriptions') || location.href.includes('/videos');
+    return location.href.includes('/subscriptions') || location.href.includes('/videos') || location.href.includes('/results');
   }
 
   const removeWatchedVideos = () => {
-    jQuery('[id="progress"]').parents('ytd-grid-video-renderer').remove();
+    jQuery('[id="progress"]').parents('ytd-grid-video-renderer, ytd-video-renderer').remove();
+    // jQuery('ytd-continuation-item-renderer').remove();
   }
 
   const buttonElement = jQuery(`
@@ -28,13 +29,13 @@
       Remove Watched
     </tp-yt-paper-button>
   `);
+  buttonElement.click(removeWatchedVideos);
 
   const handleButtonPresence = () => {
     if (shouldRender()) {
-      const containerElement = jQuery('ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary #header-container').first();
-      if (containerElement.length && !containerElement.find(buttonElement).length) {
-        buttonElement.click(removeWatchedVideos);
-        containerElement.prepend(buttonElement);
+      const gridContainerElement = jQuery('ytd-section-list-renderer, ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary #header-container').first();
+      if (gridContainerElement.length && !gridContainerElement.find(buttonElement).length) {
+        gridContainerElement.prepend(buttonElement);
       }
     } else {
       buttonElement.remove();
