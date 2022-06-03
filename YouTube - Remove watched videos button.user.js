@@ -2,7 +2,7 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched videos from the subscription page
 // @author         MetalTxus
-// @version        1.0.4
+// @version        1.0.5
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -20,8 +20,11 @@
   }
 
   const removeWatchedVideos = () => {
-    jQuery('[id="progress"]').parents('ytd-grid-video-renderer, ytd-video-renderer').remove();
-    // jQuery('ytd-continuation-item-renderer').remove();
+    const watchedVideos = jQuery('[id="progress"]').parents('ytd-grid-video-renderer, ytd-video-renderer');
+    watchedVideos.remove();
+
+    const videousLeft = jQuery('ytd-grid-video-renderer, ytd-video-renderer');
+    buttonElement.text(`Remove Watched (${watchedVideos.length} videos removed / ${videousLeft.length} videos left)`)
   }
 
   const buttonElement = jQuery(`
@@ -29,12 +32,12 @@
       Remove Watched
     </tp-yt-paper-button>
   `);
-  buttonElement.click(removeWatchedVideos);
 
   const handleButtonPresence = () => {
     if (shouldRender()) {
       const gridContainerElement = jQuery('ytd-section-list-renderer, ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary #header-container').first();
       if (gridContainerElement.length && !gridContainerElement.find(buttonElement).length) {
+        buttonElement.click(removeWatchedVideos);
         gridContainerElement.prepend(buttonElement);
       }
     } else {
