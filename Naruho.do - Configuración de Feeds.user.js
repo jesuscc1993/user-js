@@ -2,7 +2,7 @@
 // @name         Naruho.do - Configuración de Feeds
 // @description  Solventa numerosos errores y añade múltiples características, como la recarga de imágenes, vídeo y audio o la recarga automática del contador de notificaciones con la opcional reproducción de una alerta de sonido al recibirlas nuevas.
 // @author       MetalTxus
-// @version      2022.08.14.13.59
+// @version      2022.08.14.16.37
 
 // @require      https://dl.dropbox.com/s/hvb02m9hza4p7gu/typedLocalStorage.js
 
@@ -255,24 +255,28 @@ function replaceAll (string, oldValue, newValue) {
 
 function unshortBitlyLink (link, callback) {
   if (!isBitlyServiceDown) {
-    var url = 'https://api-ssl.bitly.com/v3/expand?format=txt&access_token=' + API_TOKENS.BITLY + '&shortUrl=' + encodeURI(link.href);
-
-    jQuery.ajax({
-      url: url,
-      type: 'GET',
-      cache: 'true',
-      success: function (actualURL) {
-        setLinkText(link, actualURL);
-      },
-      error: function () {
-        isBitlyServiceDown = true;
-      },
-      complete: function (response) {
-        if (callback) {
-          callback(link.href, response);
-        }
+    fetch(
+      'https://api-ssl.bitly.com/v4/expand', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_TOKENS.BITLY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "bitlink_id": link.href.split('https://')[1] })
       }
-    });
+    ).then(
+      (res) => {
+        res.json().then((res) => {
+          setLinkText(link, res.long_url);
+          if (callback) callback(link.href, res);
+        })
+      }
+    ).catch(
+      () => {
+        isBitlyServiceDown = true;
+      }
+    );
+
   } else {
     callback(link.href);
   }
@@ -696,28 +700,32 @@ function loadFeedsFromTime (time) {
   saveFeedTimeToURL(time);
   time = time || getCurrentTimeInSeconds();
 
-  var url = '/feeds/' + time;
-  removeCurrentFeeds();
+  fetch(`/feeds/${time}`).then(
+    (res) => {
+      res.json().then(
+        (json) => {
+          if (res.status == 200) {
+            removeCurrentFeeds();
 
-  jQuery.ajax({
-    type: 'GET',
-    dataType: 'json',
-    url: url,
-    success: function (data) {
-      if(data.status == 200) {
-        var nextTime = data.url.split('/feeds/')[1];
-        jQuery('#long_feeds').html(ndo.events.feeds(data.html + jQuery('#long_feeds').html()));
-        jQuery('.load-more').attr('href', nextTime).click(function (ev) {
-          ev.preventDefault();
-          loadFeedsFromTime(nextTime, true);
-        });
-        scrollToTop();
-      } else alert('Error ' + data.status + '. El servidor devolvió: ' + data.text);
-    },
-    error: function (data) {
-      alert('Error del servidor.');
+            const nextTime = json.url.split('/feeds/')[1];
+            jQuery('#long_feeds').html(ndo.events.feeds(json.html + jQuery('#long_feeds').html()));
+            jQuery('.load-more').attr('href', nextTime).click(function (ev) {
+              ev.preventDefault();
+              loadFeedsFromTime(nextTime, true);
+            });
+            scrollToTop();
+
+          } else {
+            alert(`Error ${res.status}. El servidor devolvió: ${json}'.`);
+          };
+        }
+      );
     }
-  });
+  ).catch(
+    (err) => {
+      alert(`Error ${err}.`);
+    }
+  );
 }
 
 function millisToSeconds (millis) {
