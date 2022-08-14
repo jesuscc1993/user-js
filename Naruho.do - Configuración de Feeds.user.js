@@ -2,7 +2,7 @@
 // @name         Naruho.do - Configuración de Feeds
 // @description  Solventa numerosos errores y añade múltiples características, como la recarga de imágenes, vídeo y audio o la recarga automática del contador de notificaciones con la opcional reproducción de una alerta de sonido al recibirlas nuevas.
 // @author       MetalTxus
-// @version      2022.08.14.16.37
+// @version      2022.08.14.18.23
 
 // @require      https://dl.dropbox.com/s/hvb02m9hza4p7gu/typedLocalStorage.js
 
@@ -1160,7 +1160,7 @@ function initialize () {
   emoticons = EMOTICONS[userSettings.emoticons.type];
   delete EMOTICONS;
 
-  urlTitle = document.title;
+  urlTitle = document.title.replace(/\(\d+\)/g, '');
   notificationCount = getNotificationsCountFromString(jQuery('#notification > img').attr('title'));
 
   overrideMethods(jQuery('body'));
