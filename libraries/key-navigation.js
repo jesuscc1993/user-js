@@ -54,6 +54,6 @@
     return typeof fn === 'function' && fn(...parameters);
   };
 
-  window.setUpKeyNavigation = setUpAnchorNavigation;
+  window.setUpAnchorNavigation = setUpAnchorNavigation;
   window.setUpKeyNavigation = setUpKeyNavigation;
 })();
