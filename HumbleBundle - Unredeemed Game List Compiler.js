@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         HumbleBundle Unredeemed Game List Compiler
+// @name         HumbleBundle - Unredeemed Game List Compiler
 // @description  Compiles a list of the unredeemed games
 // @author       MetalTxus
 // @version      1.0
 // @match        https://www.humblebundle.com/home/keys
+// @icon         https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
 // ==/UserScript==
 
 /* globals jQuery */
