@@ -1,8 +1,12 @@
 # UserJS
 
-To install, view the raw files. Requires the
-- [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) Chrome browser extension or the
-- [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) Firefox browser extension
+To install, view the raw files.  
+Requires a userscript loader extension:
+
+- [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (for Chrome)
+- [Tampermonkey](https://addons.opera.com/en/extensions/details/tampermonkey-beta/) (for Opera)
+- [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (for Firefox)
+
 
 # List
 
