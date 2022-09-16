@@ -2,7 +2,7 @@
 // @name         HumbleBundle - Unredeemed Game List Compiler
 // @description  Compiles a list of the unredeemed games
 // @author       MetalTxus
-// @version      2022.09.16.20.16
+// @version      2022.09.16.20.29
 // @match        https://www.humblebundle.com/home/keys
 // @icon         https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
 // ==/UserScript==
@@ -83,7 +83,7 @@
 
     const button = jQuery(`
       <button class="generate-list-button">
-        Compile games list
+        Compile unredeemed games list
       </button>
     `);
     button.click(compileGamesList);
