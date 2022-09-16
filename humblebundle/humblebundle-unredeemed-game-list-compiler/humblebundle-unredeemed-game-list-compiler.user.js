@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         HumbleBundle - Unredeemed Game List Compiler
-// @description  Compiles a list of the unredeemed games
+// @description  Compiles a list of the unredeemed games.
 // @author       MetalTxus
 // @version      2022.09.16.20.29
 // @match        https://www.humblebundle.com/home/keys
