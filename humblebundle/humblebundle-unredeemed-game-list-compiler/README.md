@@ -16,4 +16,4 @@ Compiles a list of the unredeemed games.
 
 ## Installation
 
-- [UserJS](./humblebundle-unredeemed-game-list-compiler.user.js).
+- [UserJS](./humblebundle-unredeemed-game-list-compiler.user.js) (press the "Raw" button to install).
