@@ -2,7 +2,7 @@
 // @name         HumbleBundle - Unredeemed Game List Compiler
 // @description  Compiles a list of the unredeemed games
 // @author       MetalTxus
-// @version      2022.09.15.19.30
+// @version      2022.09.16.20.16
 // @match        https://www.humblebundle.com/home/keys
 // @icon         https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
 // ==/UserScript==
@@ -24,7 +24,16 @@
   }
 
   const processPage = () => {
-    jQuery('.game-name h4').each((i, e) => games.push(e.textContent));
+    jQuery('.game-name h4').each((i, e) => {
+      const name = e.textContent;
+      const link = `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
+
+      games.push(`
+        <a href="${link}" target="_blank">
+          ${name}
+        </a>
+      `);
+    });
 
     const nextPage = jQuery('.jump-to-page.current').next();
     if (nextPage.length) {
@@ -36,12 +45,30 @@
   }
 
   const outputGames = () => {
-    var outputWindow = window.open('');
-    outputWindow.document.write(`<title>HumbleBundle Game List</title>`);
-    outputWindow.document.write(`<h3>Unredeemed game count: ${games.length}</h3>`);
-    outputWindow.document.write(games.sort().join('<br />'));
-    outputWindow.document.close();
+    const html = `
+      <!doctype html>
+      <html>
+        <head>
+          <title>Unredeemed HumbleBundle Games List</title>
+        </head>
+
+        <body>
+          ${games.sort().join('<br />')}
+
+          <p>
+            <small>Unredeemed games count: ${games.length}</small>
+          </p>
+        </body>
+      </html>
+    `;
+    downloadFile(html, 'unredeemed-humblebundle-games-list.html', 'text/plain');
   }
+
+  const downloadFile = (content, fileName, type) => {
+    const file = new Blob([content], { type });
+    const href = URL.createObjectURL(file);
+    jQuery(`<a href="${href}" download="${fileName}">`)[0].click();
+  };
 
   const initialize = () => {
     jQuery('head').append(`

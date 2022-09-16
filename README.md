@@ -10,8 +10,8 @@ Requires a userscript loader extension:
 
 # List
 
-- [global-image-zoomer.user.js](global-image-zoomer.user.js)
-- [humblebundle-unredeemed-game-list-compiler.user.js](humblebundle-unredeemed-game-list-compiler.user.js)
-- [nyaa.si-batch-download.user.js](nyaa.si-batch-download.user.js)
-- [webtoon-keyboard-navigation.user.js](webtoon-keyboard-navigation.user.js)
-- [youtube-remove-watched-videos-button.user.js](youtube-remove-watched-videos-button.user.js)
+- [global/global-image-zoomer](global/global-image-zoomer)
+- [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
+- [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
+- [webtoon/webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)
+- [youtube/youtube-remove-watched-videos-button](youtube/youtube-remove-watched-videos-button)
