@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         HumbleBundle - Unredeemed Game List Compiler
-// @description  Compiles a list of the unredeemed games.
+// @description  Compiles a list of the unredeemed games
 // @author       MetalTxus
-// @version      2022.09.16.20.29
+// @version      2022.09.17.17.37
 // @match        https://www.humblebundle.com/home/keys
 // @icon         https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
 // ==/UserScript==
@@ -29,9 +29,11 @@
       const link = `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
 
       games.push(`
-        <a href="${link}" target="_blank">
-          ${name}
-        </a>
+        <li>
+          <a href="${link}" target="_blank">
+            ${name}
+          </a>
+        </li>
       `);
     });
 
@@ -46,14 +48,24 @@
 
   const outputGames = () => {
     const html = `
-      <!doctype html>
+      <!DOCTYPE html>
       <html>
         <head>
           <title>Unredeemed HumbleBundle Games List</title>
+          <link href="https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png" rel="icon" />
+          <style>
+            ul {
+              list-style: none;
+              margin: 0;
+              padding: 0;
+            }
+          </style>
         </head>
 
         <body>
-          ${games.sort().join('<br />')}
+          <ul>
+            ${games.sort().join('')}
+          </ul>
 
           <p>
             <small>Unredeemed games count: ${games.length}</small>
