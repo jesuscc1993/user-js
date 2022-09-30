@@ -2,7 +2,7 @@
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
 // @author         MetalTxus
-// @version        2022.09.27.20.15
+// @version        2022.09.30.22.19
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -45,7 +45,7 @@ const settings = {
     hours += Math.floor(minutes / 60);
     minutes = minutes % 60;
 
-    return `${hours}:${minutes}:${seconds}`;
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   const lengthElement = jQuery(`<span class="ytd-playlist-sidebar-primary-info-renderer"></span>`);
