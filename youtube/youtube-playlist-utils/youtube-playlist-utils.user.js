@@ -2,7 +2,7 @@
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
 // @author         MetalTxus
-// @version        2022.09.30.22.19
+// @version        2022.11.02.21.48
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -50,16 +50,18 @@ const settings = {
 
   const lengthElement = jQuery(`<span class="ytd-playlist-sidebar-primary-info-renderer"></span>`);
 
-  const extraStatsElement = jQuery(`<div id="extra-stats" class="style-scope ytd-playlist-sidebar-primary-info-renderer"></div>`);
+  const extraStatsElement = jQuery(`<span id="extra-stats" class="style-scope ytd-playlist-sidebar-primary-info-renderer"></span>`);
   extraStatsElement.append(lengthElement);
 
   const calculateExtraPlaylistStats = () => {
-    const containerElement = jQuery('ytd-playlist-sidebar-primary-info-renderer').first();
+    const containerElement = jQuery('ytd-playlist-header-renderer').first();
     if (containerElement.length && !containerElement.find(extraStatsElement).length) {
-      containerElement.find('#stats').append(extraStatsElement);
+      containerElement.find('.metadata-stats').prepend(extraStatsElement);
     }
 
-    lengthElement.text(`Length: ${getPlaylistLength()}`);
+    const playlistLength = getPlaylistLength();
+    console.log(`Playlist length: ${playlistLength}`);
+    lengthElement.html(`Length: ${playlistLength}&nbsp;`);
   }
   unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
 
