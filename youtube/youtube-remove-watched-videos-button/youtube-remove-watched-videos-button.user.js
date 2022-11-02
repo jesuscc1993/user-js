@@ -2,7 +2,7 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched/upcoming videos from the subscription page
 // @author         MetalTxus
-// @version        2022.09.27.20.12
+// @version        2022.11.02.12.10
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -26,10 +26,10 @@ const settings = {
   }
 
   const removeWatchedVideos = () => {
-    const watchedVideos = jQuery('[id="progress"], [overlay-style="UPCOMING"]').parents('ytd-grid-video-renderer, ytd-video-renderer').remove();
+    const watchedVideos = jQuery('[id="progress"], [overlay-style="UPCOMING"]').parents(videosSelector).remove();
     watchedVideos.remove();
 
-    const videosLeft = jQuery('ytd-grid-video-renderer, ytd-video-renderer');
+    const videosLeft = jQuery(videosSelector);
     if (!settings.liteMode) buttonElement.text(`Remove Watched (${watchedVideos.length} videos removed / ${videosLeft.length} videos left)`);
 
     // remove headers from sections past the first one
@@ -41,7 +41,7 @@ const settings = {
 
   if (!settings.liteMode) {
     buttonElement = jQuery(`
-      <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer" style="margin-top: 24px;">
+      <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer" style="margin-top: 24px; border-radius: 8px;">
         Remove Watched
       </tp-yt-paper-button>
     `);
@@ -49,7 +49,7 @@ const settings = {
 
     const handleButtonPresence = () => {
       if (shouldRender()) {
-        const buttonContainerElement = jQuery('ytd-section-list-renderer, ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary #header-container').first();
+        const buttonContainerElement = jQuery('ytd-section-list-renderer, ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary').first();
         if (buttonContainerElement.length && !buttonContainerElement.find(buttonElement).length) {
           buttonContainerElement.prepend(buttonElement);
         }
@@ -60,4 +60,6 @@ const settings = {
 
     setInterval(handleButtonPresence, 150);
   }
+
+  const videosSelector = 'ytd-grid-video-renderer, ytd-video-renderer, ytd-rich-item-renderer';
 })();
