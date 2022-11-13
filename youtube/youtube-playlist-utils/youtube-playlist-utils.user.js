@@ -2,7 +2,7 @@
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
 // @author         MetalTxus
-// @version        2022.11.02.21.48
+// @version        2022.11.13.20.26
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -18,6 +18,8 @@ const settings = {
 
 (() => {
   'use strict';
+
+  let lengthElement, extraStatsElement, buttonElement;
 
   const shouldRender = () => {
     return location.href.includes('/playlist?list=') && jQuery('ytd-thumbnail-overlay-time-status-renderer').length;
@@ -48,13 +50,8 @@ const settings = {
     return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
-  const lengthElement = jQuery(`<span class="ytd-playlist-sidebar-primary-info-renderer"></span>`);
-
-  const extraStatsElement = jQuery(`<span id="extra-stats" class="style-scope ytd-playlist-sidebar-primary-info-renderer"></span>`);
-  extraStatsElement.append(lengthElement);
-
   const calculateExtraPlaylistStats = () => {
-    const containerElement = jQuery('ytd-playlist-header-renderer').first();
+    const containerElement = jQuery('ytd-playlist-byline-renderer').first();
     if (containerElement.length && !containerElement.find(extraStatsElement).length) {
       containerElement.find('.metadata-stats').prepend(extraStatsElement);
     }
@@ -63,10 +60,16 @@ const settings = {
     console.log(`Playlist length: ${playlistLength}`);
     lengthElement.html(`Length: ${playlistLength}&nbsp;`);
   }
-  unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
 
-  if (!settings.liteMode) {
-    const buttonElement = jQuery(`
+  const initialize = () => {
+    lengthElement = jQuery(`<span class="ytd-playlist-sidebar-primary-info-renderer"></span>`);
+
+    extraStatsElement = jQuery(`<span id="extra-stats" class="style-scope ytd-playlist-sidebar-primary-info-renderer"></span>`);
+    extraStatsElement.append(lengthElement);
+
+    unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
+
+    /*buttonElement = jQuery(`
       <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer" style="margin-top: 24px;">
         Calculate Extra Stats
       </tp-yt-paper-button>
@@ -75,7 +78,7 @@ const settings = {
 
     const handleButtonPresence = () => {
       if (shouldRender()) {
-        const buttonContainerElement = jQuery('ytd-playlist-sidebar-primary-info-renderer').first();
+        const buttonContainerElement = jQuery('.ytd-playlist-byline-renderer').first();
         if (buttonContainerElement.length && !buttonContainerElement.find('#stats').before(buttonElement).length) {
           buttonContainerElement.prepend(buttonElement);
         }
@@ -84,7 +87,12 @@ const settings = {
       }
     };
 
-    setInterval(handleButtonPresence, 150);
+    const observer = new MutationObserver(handleButtonPresence);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    handleButtonPresence();*/
   }
+
+  initialize();
 
 })();
