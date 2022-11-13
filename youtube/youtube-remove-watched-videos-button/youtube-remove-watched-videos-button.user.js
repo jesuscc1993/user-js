@@ -2,7 +2,7 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched/upcoming videos from the subscription page
 // @author         MetalTxus
-// @version        2022.11.13.23.59
+// @version        2022.11.14.00.10
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -18,6 +18,7 @@
   let buttonElement;
 
   const shouldRender = () => {
+    console.log("location.href.includes('/subscriptions')", location.href.includes('/subscriptions'))
     return location.href.includes('/subscriptions');
   }
 
@@ -36,7 +37,7 @@
 
   const handleButtonPresence = () => {
     if (shouldRender()) {
-      const buttonContainerElement = jQuery('ytd-section-list-renderer, ytd-shelf-renderer, ytd-browse:first ytd-two-column-browse-results-renderer #primary').first();
+      const buttonContainerElement = jQuery('[page-subtype="subscriptions"] ytd-section-list-renderer').first();
       if (buttonContainerElement.length && !buttonContainerElement.find(buttonElement).length) {
         buttonElement.off('click').on('click', removeWatchedVideos);
         buttonContainerElement.prepend(buttonElement);
