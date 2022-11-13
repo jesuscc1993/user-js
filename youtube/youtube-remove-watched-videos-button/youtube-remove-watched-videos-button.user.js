@@ -2,7 +2,7 @@
 // @name           YouTube - Remove watched videos button
 // @description    Adds a button to remove all watched/upcoming videos from the subscription page
 // @author         MetalTxus
-// @version        2022.11.13.20.17
+// @version        2022.11.13.22.07
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -53,10 +53,12 @@
       </tp-yt-paper-button>
     `);
 
-    const observer = new MutationObserver(handleButtonPresence);
+    /*const observer = new MutationObserver(handleButtonPresence);
     observer.observe(document.body, { childList: true, subtree: true });
 
-    handleButtonPresence();
+    handleButtonPresence();*/
+
+    setInterval(handleButtonPresence, 150);
   }
 
   initialize();
