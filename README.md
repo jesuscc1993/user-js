@@ -10,6 +10,7 @@ Requires a userscript loader extension:
 
 # List
 
+- [discord/discord-utils](discord/discord-utils)
 - [global/global-image-zoomer](global/global-image-zoomer)
 - [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
 - [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
