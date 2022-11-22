@@ -8,7 +8,7 @@
 
 // @icon           https://avatars3.githubusercontent.com/u/28658394?s=44
 // @match          https://nyaa.si/*
-// @namespace      https://github.com/jesuscc1993/user-js
+// @namespace      https://github.com/jesuscc1993
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 

@@ -6,7 +6,7 @@
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
-// @namespace      https://github.com/jesuscc1993/user-js
+// @namespace      https://github.com/jesuscc1993
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 
