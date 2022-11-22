@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name           (Global) Image Zoomer
 // @description	   Allows zooming into images without changing pages. Hold Ctrl+Shift (Cmd+Shift on MAC) when clicking on an image to load it with the extension.
-// @author         MetalTxus
 // @version        1.3.9
+// @author         MetalTxus
+// @namespace      https://github.com/jesuscc1993
 
 // @include        *
 // @exclude        *youtube.com/embed*
 
 // @icon           https://dl.dropbox.com/s/4mnevtuyvt1eden/48.png
-// @namespace      https://github.com/jesuscc1993
 // @require        http://code.jquery.com/jquery-3.2.1.min.js
 // @require        https://raw.githubusercontent.com/jesuscc1993/user-js/master/libraries/key-navigation.js
 // ==/UserScript==

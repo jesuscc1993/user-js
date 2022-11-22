@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         HumbleBundle - Unredeemed Game List Compiler
-// @description  Compiles a list of the unredeemed games
-// @author       MetalTxus
-// @version      2022.09.19.11.12
-// @match        https://www.humblebundle.com/home/keys
-// @icon         https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
-// @require      https://code.jquery.com/jquery-3.6.1.min.js
+// @name           HumbleBundle - Unredeemed Game List Compiler
+// @description    Compiles a list of the unredeemed games
+// @version        2022.09.19.11.12
+// @author         MetalTxus
+// @namespace      https://github.com/jesuscc1993
+
+// @icon           https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png
+// @match          https://www.humblebundle.com/home/keys
+// @require        https://code.jquery.com/jquery-3.6.1.min.js
 // ==/UserScript==
 
 /* globals jQuery */

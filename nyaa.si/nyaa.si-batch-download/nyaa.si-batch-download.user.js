@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name           nyaa.si - Batch Download
 // @description    Allows batch download of all displayed results in one single click.
-// @author         MetalTxus
 // @version        1.1.1
+// @author         MetalTxus
+// @namespace      https://github.com/jesuscc1993
 
 // @grant          GM_xmlhttpRequest
 
 // @icon           https://avatars3.githubusercontent.com/u/28658394?s=44
 // @match          https://nyaa.si/*
-// @namespace      https://github.com/jesuscc1993
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 
