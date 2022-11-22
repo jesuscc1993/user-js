@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           nyaa.si - Batch Download
 // @description    Allows batch download of all displayed results in one single click.
-// @version        1.1.1
+// @version        2022.04.13
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 

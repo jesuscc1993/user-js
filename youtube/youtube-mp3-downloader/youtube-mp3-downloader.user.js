@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name           YouTube - MP3 downloader
 // @description    Adds a "Download as MP3" button to the "watch video" page
+// @version        2022.04.13
 // @author         MetalTxus
-// @version        1.1.1
+// @namespace      https://github.com/jesuscc1993
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
-// @namespace      https://github.com/jesuscc1993
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 
