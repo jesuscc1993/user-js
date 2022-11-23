@@ -5,7 +5,7 @@
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
-// @match          *
+// @include        *
 // @exclude        *youtube.com/embed*
 
 // @icon           https://dl.dropbox.com/s/4mnevtuyvt1eden/48.png
