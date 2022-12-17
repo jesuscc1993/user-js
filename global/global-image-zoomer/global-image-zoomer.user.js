@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name           (Global) Image Zoomer
-// @description	   Allows zooming into images without changing pages. Hold Ctrl+Shift (Cmd+Shift on MAC) when clicking on an image to load it with the extension.
-// @version        2022.02.10
+// @description	   Allows zooming into images without changing pages. Hold Ctrl+Shift (Cmd+Shift on MAC) when clicking on an image to load it with the script.
+// @version        2022.12.17.17.31
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
-// @include        *
+// @match          *://*/*
 // @exclude        *youtube.com/embed*
 
 // @icon           https://dl.dropbox.com/s/4mnevtuyvt1eden/48.png
@@ -120,15 +120,16 @@ const loadSiblingImage = increment => {
 
   const imagesUrls = [
       ...new Set(
-          jQuery('img')
+          jQuery('img:not(#giz-preloader)')
               .map((i, img) => img.src)
               .toArray()
       )
   ];
   const currentImageUrl = gizImage.attr('src');
   const currentIndex = imagesUrls.indexOf(currentImageUrl);
-  const requestedIndex = currentIndex + increment;
+  let requestedIndex = currentIndex + increment;
   if (requestedIndex < 0 || requestedIndex >= imagesUrls.length) {
+    requestedIndex = currentIndex;
     hideContainer();
   }
   /*const newIndex = requestedIndex < 0 ? 0 : requestedIndex >= imagesUrls.length ? imagesUrls.length - 1 : requestedIndex;*/
