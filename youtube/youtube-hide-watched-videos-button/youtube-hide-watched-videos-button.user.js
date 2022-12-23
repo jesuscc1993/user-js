@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - "Hide watched videos" button
 // @description    Adds a button to hide all watched/upcoming videos from the subscription page
-// @version        2022.11.23.21.16
+// @version        2022.12.23.18.21
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -18,31 +18,22 @@
   let buttonElement;
 
   const shouldRender = () => {
-    return !!location.href.match(urlPattern).length;
+    return location.href.match(urlPattern) !== null;
   }
 
   const hideWatchedVideos = () => {
     const watchedVideos = jQuery('[id="progress"], [overlay-style="UPCOMING"]').parents(videosSelector);
     watchedVideos.css('display', 'none');
 
-    const leftVideosCount = jQuery(videosSelector).length - watchedVideos.length;
-    buttonElement.text(`Hide watched (${watchedVideos.length} videos hid / ${leftVideosCount} videos left)`);
-
-    // remove headers from sections past the first one
-    jQuery('ytd-item-section-renderer:not(:nth-child(1))').css('border', 'none');
-    jQuery('ytd-item-section-renderer:not(:nth-child(1)) .grid-subheader').css('display', 'none');
-    jQuery('ytd-item-section-renderer:not(:nth-child(1)) #contents.ytd-shelf-renderer').css('margin-top', 0);
+    const videosLeftCount = jQuery(videosSelector).length - watchedVideos.length;
+    buttonElement.text(`Hide watched (${watchedVideos.length} videos hid / ${videosLeftCount} videos left)`);
   };
 
   const handleButtonPresence = () => {
     if (shouldRender()) {
-      const buttonContainerElement = jQuery(`
-        [page-subtype="channels"] ytd-rich-grid-renderer,
-        [page-subtype="subscriptions"] ytd-section-list-renderer,
-        ytd-search ytd-section-list-renderer
-      `).first();
+      const buttonContainerElement = jQuery(buttonContainerSelector).first();
       if (buttonContainerElement.length && !buttonContainerElement.find(buttonElement).length) {
-        buttonElement.off('click').on('click', hideWatchedVideos);
+        buttonElement.off('click').on('click', hideWatchedVideos).text('Hide Watched');
         buttonContainerElement.prepend(buttonElement);
       }
     } else {
@@ -51,40 +42,47 @@
   };
 
   const initialize = () => {
-    buttonElement = buttonElement = jQuery(`
-      <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-hide-watched-button">
-        Hide Watched
-      </tp-yt-paper-button>
-    `);
-
-    /*const observer = new MutationObserver(handleButtonPresence);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    handleButtonPresence();*/
-
-    jQuery('head').append(`
-      <style>
-        .mt-hide-watched-button {
-          border-radius: 8px !important;
-          width: 100%;
-        }
-
-        [page-subtype="channels"] .mt-hide-watched-button,
-        [page-subtype="subscriptions"] .mt-hide-watched-button {
-          margin-top: 24px;
-        }
-
-        .ytd-search ytd-section-list-renderer .mt-hide-watched-button {
-          margin: 12px 0;
-        }
-      </style>
-    `);
-
+    buttonElement = jQuery(buttonTemplate);
     setInterval(handleButtonPresence, 150);
+    jQuery('head').append(style);
   }
+
+  const buttonContainerSelector = `
+    [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
+    [page-subtype="playlist"][role="main"] ytd-item-section-renderer,
+    [page-subtype="subscriptions"][role="main"] ytd-section-list-renderer,
+    ytd-search[role="main"] ytd-section-list-renderer
+  `;
+  const videosSelector = `
+    [page-subtype="channels"][role="main"] ytd-rich-grid-row,
+    [page-subtype="playlist"][role="main"] ytd-playlist-video-renderer,
+    [page-subtype="subscriptions"][role="main"] ytd-grid-video-renderer,
+    ytd-search[role="main"] ytd-video-renderer
+  `;
+  const style = `
+    <style>
+      .mt-hide-watched-button {
+        border-radius: 8px !important;
+        width: 100%;
+      }
+
+      [page-subtype="channels"] .mt-hide-watched-button,
+      [page-subtype="subscriptions"] .mt-hide-watched-button {
+        margin-top: 24px;
+      }
+
+      .ytd-search ytd-section-list-renderer .mt-hide-watched-button {
+        margin: 12px 0;
+      }
+    </style>
+  `
+  const buttonTemplate = `
+    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-hide-watched-button">
+      Hide Watched
+    </tp-yt-paper-button>
+  `;
+  const urlPattern = /youtube.com\/((channel\/|c\/|@)(.*)\/videos|feed\/subscriptions|results|playlist)/;
 
   initialize();
 
-  const videosSelector = 'ytd-grid-video-renderer, ytd-video-renderer, ytd-rich-item-renderer';
-  const urlPattern = /youtube.com\/((channel\/|c\/|@)(.*)\/videos|feed\/subscriptions|results)/;
 })();
