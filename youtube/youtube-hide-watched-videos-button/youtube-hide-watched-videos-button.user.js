@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - "Hide watched videos" button
 // @description    Adds a button to hide all watched/upcoming videos from the subscription page
-// @version        2022.12.23.18.21
+// @version        2022.12.30.23.32
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -54,7 +54,7 @@
     ytd-search[role="main"] ytd-section-list-renderer
   `;
   const videosSelector = `
-    [page-subtype="channels"][role="main"] ytd-rich-grid-row,
+    [page-subtype="channels"][role="main"] ytd-rich-item-renderer,
     [page-subtype="playlist"][role="main"] ytd-playlist-video-renderer,
     [page-subtype="subscriptions"][role="main"] ytd-grid-video-renderer,
     ytd-search[role="main"] ytd-video-renderer
