@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name           YouTube - "Hide watched videos" button
+// @name           YouTube - "Hide watched/upcoming videos" button
 // @description    Adds a button to hide all watched/upcoming videos from the subscription page
-// @version        2022.12.30.23.32
+// @version        2023.03.04.10.47
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @icon           https://www.youtube.com/favicon.ico
-// @match          https://www.youtube.com/*
+// @match          *://*.youtube.com/*
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 
@@ -26,14 +26,14 @@
     watchedVideos.css('display', 'none');
 
     const videosLeftCount = jQuery(videosSelector).length - watchedVideos.length;
-    buttonElement.text(`Hide watched (${watchedVideos.length} videos hid / ${videosLeftCount} videos left)`);
+    buttonElement.text(`Hide watched / upcoming (${watchedVideos.length} hid | ${videosLeftCount} left)`);
   };
 
   const handleButtonPresence = () => {
     if (shouldRender()) {
       const buttonContainerElement = jQuery(buttonContainerSelector).first();
       if (buttonContainerElement.length && !buttonContainerElement.find(buttonElement).length) {
-        buttonElement.off('click').on('click', hideWatchedVideos).text('Hide Watched');
+        buttonElement.off('click').on('click', hideWatchedVideos).text('Hide watched / upcoming');
         buttonContainerElement.prepend(buttonElement);
       }
     } else {
@@ -77,9 +77,7 @@
     </style>
   `
   const buttonTemplate = `
-    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-hide-watched-button">
-      Hide Watched
-    </tp-yt-paper-button>
+    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-hide-watched-button" />
   `;
   const urlPattern = /youtube.com\/((channel\/|c\/|@)(.*)\/videos|feed\/subscriptions|results|playlist)/;
 
