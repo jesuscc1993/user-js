@@ -15,4 +15,4 @@ Requires a userscript loader extension:
 - [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
 - [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
 - [webtoon/webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)
-- [youtube/youtube-remove-watched-videos-button](youtube/youtube-remove-watched-videos-button)
+- [youtube/youtube-hide-videos-buttons](youtube/youtube-hide-videos-buttons)
