@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Hide videos buttons
-// @description    Adds buttons to hide watched / upcoming / both videos from the subscription page
-// @version        2023.03.06.23.52
+// @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
+// @version        2023.03.07.00.14
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -95,6 +95,7 @@
     <style>
       .mt-hide-videos-container {
         display: flex;
+        width: 100%;
       }
 
       .mt-hide-videos-button {
