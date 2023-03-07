@@ -21,24 +21,30 @@
     return location.href.match(urlPattern) !== null;
   }
 
-  const watchedVideosSelector = '[id="progress"]';
-  const upcomingVideosSelector = '[overlay-style="UPCOMING"]';
+  const handleButtonPresence = () => {
+    if (shouldRender()) {
+      const destinationElement = jQuery(destinationElementSelector).first();
+      if (destinationElement.length && !destinationElement.find(buttonContainer).length) {
+        insertButtons(destinationElement);
+      }
+    } else {
+      buttonContainer.remove();
+    }
+  };
+
+  const insertButtons = (destinationElement) => {
+    hideBothButton.off('click').on('click', hideBothVideos).text(i18n.hideBoth);
+    hideWatchedButton.off('click').on('click', hideWatchedVideos).text(i18n.hideWatched);
+    hideUpcomingButton.off('click').on('click', hideUpcomingVideos).text(i18n.hideUpcoming);
+    destinationElement.prepend(buttonContainer);
+  }
 
   const hideWatchedVideos = () => {
-    hideVideos(watchedVideosSelector, hideWatchedButton, `Hide watched (-{ matchingVideos }/{ totalCount })`);
+    hideVideos(watchedVideosSelector, hideWatchedButton, `${i18n.hideWatched} ${i18n.buttonParams}`);
   };
 
   const hideUpcomingVideos = () => {
-    hideVideos(upcomingVideosSelector, hideUpcomingButton, `Hide upcoming (-{ matchingVideos }/{ totalCount })`);
-  };
-
-  const hideBothVideos = () => {
-    hideWatchedVideos();
-    hideUpcomingVideos();
-
-    const matchingVideosCount = jQuery(`${watchedVideosSelector}, ${upcomingVideosSelector}`).parents(videosSelector).length;
-    const totalVideoCount = jQuery(videosSelector).length;
-    hideBothButton.text(`Hide both (-${ matchingVideosCount }/${ totalVideoCount })`);
+    hideVideos(upcomingVideosSelector, hideUpcomingButton, `${i18n.hideUpcoming} ${i18n.buttonParams}`);
   };
 
   const hideVideos = (matchingSelector, button, text) => {
@@ -52,26 +58,19 @@
       .replace(/\{\s*totalCount\s*\}/g, totalVideoCount));
   };
 
-  const handleButtonPresence = () => {
-    if (shouldRender()) {
-      const destinationElement = jQuery(destinationElementSelector).first();
-      if (destinationElement.length && !destinationElement.find(buttonContainer).length) {
-        insertButtons(destinationElement);
-      }
-    } else {
-      buttonContainer.remove();
-    }
+  const hideBothVideos = () => {
+    hideWatchedVideos();
+    hideUpcomingVideos();
+
+    const matchingVideosCount = jQuery(`${watchedVideosSelector}, ${upcomingVideosSelector}`).parents(videosSelector).length;
+    const totalVideoCount = jQuery(videosSelector).length;
+    hideBothButton.text(`${i18n.hideBoth} ${i18n.buttonParams}`
+      .replace(/\{\s*matchingVideos\s*\}/g, matchingVideosCount)
+      .replace(/\{\s*totalCount\s*\}/g, totalVideoCount));
   };
 
-  const insertButtons = (destinationElement) => {
-    hideBothButton.off('click').on('click', hideBothVideos).text('Hide both');
-    hideWatchedButton.off('click').on('click', hideWatchedVideos).text('Hide watched');
-    hideUpcomingButton.off('click').on('click', hideUpcomingVideos).text('Hide upcoming');
-    destinationElement.prepend(buttonContainer);
-  }
-
   const initialize = () => {
-    jQuery('head').append(style);
+    jQuery('head').append(baseStyle);
 
     buttonContainer = jQuery(`<div class="mt-hide-videos-container"></div>`);
     hideBothButton = jQuery(buttonTemplate).addClass('mt-hide-both');
@@ -84,6 +83,8 @@
     setInterval(handleButtonPresence, 150);
   }
 
+  const watchedVideosSelector = `[id="progress"]`;
+  const upcomingVideosSelector = `[overlay-style="UPCOMING"]`;
   const destinationElementSelector = `
     [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
     [page-subtype="playlist"][role="main"] ytd-item-section-renderer,
@@ -96,7 +97,7 @@
     [page-subtype="subscriptions"][role="main"] ytd-grid-video-renderer,
     ytd-search[role="main"] ytd-video-renderer
   `;
-  const style = `
+  const baseStyle = `
     <style>
       .mt-hide-videos-container {
         display: flex;
@@ -125,11 +126,18 @@
         }
       }
     </style>
-  `
+  `;
   const buttonTemplate = `
     <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-hide-videos-button" />
   `;
   const urlPattern = /youtube.com\/((channel\/|c\/|@)(.*)\/videos|feed\/subscriptions|results|playlist)/;
+  const i18n = {
+    hideBoth: 'Hide both',
+    hideWatched: 'Hide watched',
+    hideUpcoming: 'Hide upcoming',
+    buttonParams: '(-{ matchingVideos }/{ totalCount })'
+  };
+
 
   initialize();
 
