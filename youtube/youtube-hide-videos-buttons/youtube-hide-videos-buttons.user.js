@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Hide videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.03.07.00.14
+// @version        2023.03.07.17.07
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -24,16 +24,21 @@
   const watchedVideosSelector = '[id="progress"]';
   const upcomingVideosSelector = '[overlay-style="UPCOMING"]';
 
-  const hideBothVideos = () => {
-    hideVideos(`${watchedVideosSelector}, ${upcomingVideosSelector}`, hideBothButton, `Hide both (-{ matchingVideos }/{ totalCount })`);
-  };
-
   const hideWatchedVideos = () => {
     hideVideos(watchedVideosSelector, hideWatchedButton, `Hide watched (-{ matchingVideos }/{ totalCount })`);
   };
 
   const hideUpcomingVideos = () => {
     hideVideos(upcomingVideosSelector, hideUpcomingButton, `Hide upcoming (-{ matchingVideos }/{ totalCount })`);
+  };
+
+  const hideBothVideos = () => {
+    hideWatchedVideos();
+    hideUpcomingVideos();
+
+    const matchingVideosCount = jQuery(`${watchedVideosSelector}, ${upcomingVideosSelector}`).parents(videosSelector).length;
+    const totalVideoCount = jQuery(videosSelector).length;
+    hideBothButton.text(`Hide both (-${ matchingVideosCount }/${ totalVideoCount })`);
   };
 
   const hideVideos = (matchingSelector, button, text) => {
@@ -69,7 +74,7 @@
     jQuery('head').append(style);
 
     buttonContainer = jQuery(`<div class="mt-hide-videos-container"></div>`);
-    hideBothButton = jQuery(buttonTemplate);
+    hideBothButton = jQuery(buttonTemplate).addClass('mt-hide-both');
     hideWatchedButton = jQuery(buttonTemplate);
     hideUpcomingButton = jQuery(buttonTemplate);
     buttonContainer.append(hideWatchedButton);
@@ -95,12 +100,14 @@
     <style>
       .mt-hide-videos-container {
         display: flex;
+        grid-gap: 8px;
         width: 100%;
       }
 
       .mt-hide-videos-button {
         border-radius: 8px !important;
         flex: 1;
+        margin: 0 !important;
       }
 
       [page-subtype="channels"] .mt-hide-videos-container,
@@ -110,6 +117,12 @@
 
       .ytd-search ytd-section-list-renderer .mt-hide-videos-container {
         margin: 12px 0;
+      }
+
+      @media only screen and (min-width: 1000px) {
+        .mt-hide-both {
+          flex: 2;
+        }
       }
     </style>
   `
