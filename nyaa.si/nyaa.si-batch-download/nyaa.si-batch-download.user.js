@@ -9,7 +9,7 @@
 
 // @icon           https://avatars3.githubusercontent.com/u/28658394?s=44
 // @match          https://nyaa.si/*
-// @require        https://code.jquery.com/jquery-3.2.1.min.js
+// @require        https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // ==/UserScript==
 
 /* globals jQuery */

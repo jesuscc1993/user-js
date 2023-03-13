@@ -7,7 +7,7 @@
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
-// @require        https://code.jquery.com/jquery-3.2.1.min.js
+// @require        https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // ==/UserScript==
 
 /* globals jQuery */

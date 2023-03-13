@@ -7,7 +7,7 @@
 
 // @icon           https://webtoons-static.pstatic.net/image/favicon/favicon.ico
 // @match          https://www.webtoons.com/*
-// @require        https://code.jquery.com/jquery-3.2.1.min.js
+// @require        https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @require        https://raw.githubusercontent.com/jesuscc1993/user-js/master/libraries/key-navigation.js
 // ==/UserScript==
 
