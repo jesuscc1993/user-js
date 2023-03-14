@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.03.13.18.34
+// @version        2023.03.14.10.24
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -22,7 +22,6 @@
   let buttonsRow;
   let toggleUpcomingButton;
   let toggleWatchedButton;
-  let totalVideoCount;
 
   let upcomingHidden = await GM.getValue('upcomingHidden', false);
   let watchedHidden = await GM.getValue('watchedHidden', false);
@@ -59,15 +58,20 @@
   };
 
   const insertButtons = (buttonDestinationContainer) => {
-    toggleWatchedButton
-      .off('click')
-      .on('click', toggleWatchedVideos)
-      .text(i18n.hideWatched);
+    toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
+    toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
 
-    toggleUpcomingButton
-      .off('click')
-      .on('click', toggleUpcomingVideos)
-      .text(i18n.hideUpcoming);
+    setButtonText(
+      toggleWatchedButton,
+      watchedHidden ? i18n.showWatched : i18n.hideWatched,
+      { matchingVideosCount: 0 }
+    );
+
+    setButtonText(
+      toggleUpcomingButton,
+      upcomingHidden ? i18n.showUpcoming : i18n.hideUpcoming,
+      { matchingVideosCount: 0 }
+    );
 
     buttonDestinationContainer.prepend(buttonsContainer);
   };
@@ -114,10 +118,12 @@
       : matchingVideos.removeClass('mt-hidden');
 
     const matchingVideosCount = matchingVideos && matchingVideos.length;
+    setButtonText(button, text, { matchingVideosCount });
+  };
+
+  const setButtonText = (button, text, params) => {
     button.text(
-      text
-        .replace(/\{\s*matchingVideos\s*\}/g, matchingVideosCount)
-        .replace(/\{\s*totalCount\s*\}/g, totalVideoCount)
+      text.replace(/\{\s*matchingVideos\s*\}/g, params.matchingVideosCount)
     );
   };
 
@@ -164,8 +170,6 @@
   const watchedVideosSelector = `[id="progress"]`;
 
   const upcomingVideosSelector = `[overlay-style="UPCOMING"]`;
-
-  const bothVideosSelector = `${watchedVideosSelector}, ${upcomingVideosSelector}`;
 
   const buttonDestinationContainerSelector = `
     [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
