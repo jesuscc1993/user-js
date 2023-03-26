@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.03.26.19.59
+// @version        2023.03.26.20.40
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -22,6 +22,7 @@
 
   let buttonsContainer;
   let buttonsRow;
+  let currentUrl;
   let toggleUpcomingButton;
   let toggleWatchedButton;
   let videosTotal;
@@ -34,7 +35,28 @@
   };
 
   const shouldRunScript = () => {
-    return document.querySelectorAll(unprocessedVideosSelectors).length;
+    const oldUrl = currentUrl;
+    currentUrl = location.href.split('?')[0];
+
+    const oldVideosTotal = videosTotal;
+    videosTotal = jQuery(videosSelector).length;
+
+    const locationChanged = !!oldUrl && oldUrl !== currentUrl;
+    const videosCountChanged = oldVideosTotal !== videosTotal;
+    const videosShouldBeHidden = (upcomingHidden || watchedHidden) && !!document.querySelectorAll(unprocessedVideosSelectors).length;
+    const videosShouldBeShown = (!upcomingHidden || !watchedHidden) && !!document.querySelectorAll(processedVideosSelectors).length;
+
+    const shouldIt = shouldRenderButton() && (locationChanged || videosCountChanged || videosShouldBeHidden || videosShouldBeShown);
+
+    if (shouldIt) {
+      debug(`Videos should be processed
+        locationChanged: ${locationChanged}
+        videosCountChanged: ${videosCountChanged}
+        videosShouldBeHidden: ${videosShouldBeHidden}
+        videosShouldBeShown: ${videosShouldBeShown}`);
+    }
+
+    return shouldIt;
   };
 
   const runButtonTask = () => {
@@ -63,30 +85,31 @@
   const insertButtons = (buttonDestinationContainer) => {
     toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
     toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
+    videosTotal = jQuery(videosSelector).length;
+
+    const params = { matchingVideosCount: 0 };
 
     setButtonText(
       toggleWatchedButton,
-      watchedHidden ? i18n.showWatched : i18n.hideWatched
+      watchedHidden ? i18n.showWatched : i18n.hideWatched,
+      params
     );
 
     setButtonText(
       toggleUpcomingButton,
-      upcomingHidden ? i18n.showUpcoming : i18n.hideUpcoming
+      upcomingHidden ? i18n.showUpcoming : i18n.hideUpcoming,
+      params
     );
 
     buttonDestinationContainer.prepend(buttonsContainer);
   };
 
   const processAllVideos = () => {
-    const allVideos = jQuery(videosSelector);
-    videosTotal = allVideos.length;
-
     debug(`Processing videos...`);
+    videosTotal = jQuery(videosSelector).length;
     if (upcomingHidden) processUpcomingVideos();
     if (watchedHidden) processWatchedVideos();
     debug(`All videos processed`);
-
-    allVideos.addClass('mt-processed');
   };
 
   const toggleWatchedVideos = () => {
@@ -195,17 +218,20 @@
     ytd-search[role="main"] ytd-video-renderer
   `;
 
-  /*const unprocessedVideosSelectors = videosSelector
+  const unprocessedVideosSelectors = videosSelector
     .split(',')
     .map(
       (selector) =>
         `${selector}:not(.mt-hidden) ${watchedVideosSelector},\n${selector}:not(.mt-hidden) ${upcomingVideosSelector}`
     )
-    .join(',');*/
+    .join(',');
 
-  const unprocessedVideosSelectors = videosSelector
+  const processedVideosSelectors = videosSelector
     .split(',')
-    .map((selector) => `${selector}:not(.mt-processed)`)
+    .map(
+      (selector) =>
+        `${selector}:.mt-hidden ${watchedVideosSelector},\n${selector}:.mt-hidden ${upcomingVideosSelector}`
+    )
     .join(',');
 
   // templates
