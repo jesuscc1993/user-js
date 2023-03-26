@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.03.14.10.24
+// @version        2023.03.26.19.36
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -61,16 +61,21 @@
     toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
     toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
 
+    const params = {
+      matchingVideosCount: 0,
+      videosTotal: jQuery(videosSelector).length
+    };
+
     setButtonText(
       toggleWatchedButton,
       watchedHidden ? i18n.showWatched : i18n.hideWatched,
-      { matchingVideosCount: 0 }
+      params
     );
 
     setButtonText(
       toggleUpcomingButton,
       upcomingHidden ? i18n.showUpcoming : i18n.hideUpcoming,
-      { matchingVideosCount: 0 }
+      params
     );
 
     buttonDestinationContainer.prepend(buttonsContainer);
@@ -118,12 +123,15 @@
       : matchingVideos.removeClass('mt-hidden');
 
     const matchingVideosCount = matchingVideos && matchingVideos.length;
-    setButtonText(button, text, { matchingVideosCount });
+    const videosTotal = jQuery(videosSelector).length;
+    setButtonText(button, text, { matchingVideosCount, videosTotal });
   };
 
   const setButtonText = (button, text, params) => {
     button.text(
-      text.replace(/\{\s*matchingVideos\s*\}/g, params.matchingVideosCount)
+      text
+        .replace(/\{\s*matchingVideos\s*\}/g, params.matchingVideosCount)
+        .replace(/\{\s*videosTotal\s*\}/g, params.videosTotal)
     );
   };
 
@@ -157,7 +165,7 @@
     show: 'Show',
     watched: 'watched',
     upcoming: 'upcoming',
-    buttonParams: '({ matchingVideos })',
+    buttonParams: '({ matchingVideos } / { videosTotal })',
   };
 
   i18n.hideWatched = `${i18n.hide} ${i18n.watched}`;
@@ -195,31 +203,31 @@
 
   // templates
   const buttonTemplate = `
-    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-toggle-videos-Button" />
+    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-toggle-videos-button" />
   `;
 
   const buttonsContainerTemplate = `
-    <div class="mt-toggle-Videos-container"></div>
+    <div class="mt-toggle-videos-container"></div>
   `;
 
   const buttonsRowTemplate = `
-    <div class="mt-toggle-videos-Buttons-row"></div>
+    <div class="mt-toggle-videos-buttons-row"></div>
   `;
 
   // style
   const baseStyle = `
     <style>
-      .mt-toggle-Videos-container {
+      .mt-toggle-videos-container {
         width: 100%;
       }
 
-      .mt-toggle-videos-Buttons-row {
+      .mt-toggle-videos-buttons-row {
         display: flex;
         grid-gap: 8px;
       }
 
-      .mt-toggle-videos-Button {
-        border-radius: 8px !important;
+      .mt-toggle-videos-button {
+        border-radius: 20px !important;
         flex: 1;
         margin: 0 !important;
       }
@@ -228,12 +236,17 @@
         display: none !important;
       }
 
-      [page-subtype="channels"] .mt-toggle-Videos-container,
-      [page-subtype="subscriptions"] .mt-toggle-Videos-container {
+      [page-subtype="channels"] .mt-toggle-videos-container,
+      [page-subtype="subscriptions"] .mt-toggle-videos-container {
         margin-top: 24px;
       }
 
-      .ytd-search ytd-section-list-renderer .mt-toggle-Videos-container {
+      [page-subtype="playlist"] .mt-toggle-videos-container {
+        box-sizing: border-box;
+        padding: 0 24px;
+      }
+
+      .ytd-search ytd-section-list-renderer .mt-toggle-videos-container {
         margin: 12px 0;
       }
     </style>
