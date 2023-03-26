@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.03.26.20.40
+// @version        2023.03.26.20.42
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
