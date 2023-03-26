@@ -18,7 +18,7 @@
 (async () => {
   'use strict';
 
-  const enableDebug = true;
+  const enableDebug = false;
 
   let buttonsContainer;
   let buttonsRow;
