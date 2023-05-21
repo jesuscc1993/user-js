@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.04.27.10.32
+// @version        2023.05.21.12.27
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -43,10 +43,21 @@
 
     const locationChanged = !!oldUrl && oldUrl !== currentUrl;
     const videosCountChanged = oldVideosTotal !== videosTotal;
-    const videosShouldBeHidden = (upcomingHidden || watchedHidden) && !!document.querySelectorAll(unprocessedVideosSelectors).length;
-    const videosShouldBeShown = (!upcomingHidden || !watchedHidden) && !!document.querySelectorAll(processedVideosSelectors).length;
 
-    const shouldIt = shouldRenderButton() && (locationChanged || videosCountChanged || videosShouldBeHidden || videosShouldBeShown);
+    const videosShouldBeHidden =
+      (upcomingHidden || watchedHidden) &&
+      !!document.querySelectorAll(unprocessedVideosSelectors).length;
+
+    const videosShouldBeShown =
+      (!upcomingHidden || !watchedHidden) &&
+      !!document.querySelectorAll(processedVideosSelectors).length;
+
+    const shouldIt =
+      shouldRenderButton() &&
+      (locationChanged ||
+        videosCountChanged ||
+        videosShouldBeHidden ||
+        videosShouldBeShown);
 
     if (shouldIt) {
       debug(`Videos should be processed
@@ -153,13 +164,16 @@
   };
 
   const setButtonText = (button, text, params) => {
-    const suffix = params?.matchingVideosCount !== undefined ? `(${params.matchingVideosCount} / ${videosTotal})` : '';
+    const suffix =
+      params?.matchingVideosCount !== undefined
+        ? `(${params.matchingVideosCount} / ${videosTotal})`
+        : '';
     button.text(`${text} ${suffix}`);
   };
 
-  const debug = enableDebug ?
-    (message) => console.debug(`${scriptPrefix} ${message}`) :
-    () => {};
+  const debug = enableDebug
+    ? (message) => console.debug(`${scriptPrefix} ${message}`)
+    : () => {};
 
   const initialize = () => {
     jQuery('head').append(baseStyle);
@@ -190,7 +204,7 @@
     hide: 'Hide',
     show: 'Show',
     watched: 'watched',
-    upcoming: 'upcoming'
+    upcoming: 'upcoming',
   };
 
   i18n.hideWatched = `${i18n.hide} ${i18n.watched}`;
@@ -220,18 +234,20 @@
   `;
 
   const unprocessedVideosSelectors = videosSelector
+    .replace(/\n\s*/g, '')
     .split(',')
     .map(
       (selector) =>
-        `${selector}:not(.mt-hidden) ${watchedVideosSelector},\n${selector}:not(.mt-hidden) ${upcomingVideosSelector}`
+        `${selector}:not(.mt-hidden) ${watchedVideosSelector}, ${selector}:not(.mt-hidden) ${upcomingVideosSelector}`
     )
     .join(',');
 
   const processedVideosSelectors = videosSelector
+    .replace(/\n\s*/g, '')
     .split(',')
     .map(
       (selector) =>
-        `${selector}:.mt-hidden ${watchedVideosSelector},\n${selector}:.mt-hidden ${upcomingVideosSelector}`
+        `${selector}.mt-hidden ${watchedVideosSelector}, ${selector}.mt-hidden ${upcomingVideosSelector}`
     )
     .join(',');
 
