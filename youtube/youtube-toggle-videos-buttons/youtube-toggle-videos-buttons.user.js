@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.05.21.12.27
+// @version        2023.05.21.20.30
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -25,10 +25,12 @@
   let currentUrl;
   let toggleUpcomingButton;
   let toggleWatchedButton;
+  let toggleButtonsButton;
   let videosTotal;
 
   let upcomingHidden = await GM.getValue('upcomingHidden', false);
   let watchedHidden = await GM.getValue('watchedHidden', false);
+  let buttonsHidden = await GM.getValue('buttonsHidden', false);
 
   const shouldRenderButton = () => {
     return location.href.match(urlPattern) !== null;
@@ -96,6 +98,7 @@
   const insertButtons = (buttonDestinationContainer) => {
     toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
     toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
+    toggleButtonsButton.off('click').on('click', toggleButtons);
     videosTotal = jQuery(videosSelector).length;
 
     const params = { matchingVideosCount: 0 };
@@ -133,6 +136,13 @@
     upcomingHidden = !upcomingHidden;
     GM.setValue('upcomingHidden', upcomingHidden);
     processUpcomingVideos();
+  };
+
+  const toggleButtons = (newValue) => {
+    buttonsHidden = typeof newValue == 'boolean' ? newValue : !buttonsHidden;
+    GM.setValue('buttonsHidden', buttonsHidden);
+    buttonsHidden ? buttonsRow.addClass('hide-buttons') : buttonsRow.removeClass('hide-buttons');
+    toggleButtonsButton.text(buttonsHidden ? '+' : '-');
   };
 
   const processWatchedVideos = () => {
@@ -180,10 +190,13 @@
 
     toggleWatchedButton = jQuery(buttonTemplate);
     toggleUpcomingButton = jQuery(buttonTemplate);
+    toggleButtonsButton = jQuery(buttonTemplate).addClass('toggle-buttons-button');
 
     buttonsRow = jQuery(buttonsRowTemplate);
     buttonsRow.append(toggleWatchedButton);
     buttonsRow.append(toggleUpcomingButton);
+    buttonsRow.append(toggleButtonsButton);
+    toggleButtons(buttonsHidden);
 
     buttonsContainer = jQuery(buttonsContainerTemplate);
     buttonsContainer.append(buttonsRow);
@@ -274,12 +287,27 @@
       .mt-toggle-videos-buttons-row {
         display: flex;
         grid-gap: 8px;
+        justify-content: right;
+        padding-left: 37px;
+      }
+
+      .mt-toggle-videos-buttons-row.hide-buttons .mt-toggle-videos-button:not(.toggle-buttons-button) {
+        display: none;
       }
 
       .mt-toggle-videos-button {
         border-radius: 20px !important;
         flex: 1;
         margin: 0 !important;
+      }
+
+      .mt-toggle-videos-button.toggle-buttons-button {
+        background: transparent;
+        flex: 0;
+        min-width: 37px;
+      }
+      .mt-toggle-videos-button.toggle-buttons-button:hover {
+        background: var(--yt-spec-10-percent-layer);
       }
 
       .mt-hidden {
