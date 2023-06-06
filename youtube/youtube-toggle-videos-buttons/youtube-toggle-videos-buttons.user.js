@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.05.21.20.45
+// @version        2023.06.06.16.16
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -141,7 +141,9 @@
   const toggleButtons = (newValue) => {
     buttonsHidden = typeof newValue == 'boolean' ? newValue : !buttonsHidden;
     GM.setValue('buttonsHidden', buttonsHidden);
-    buttonsHidden ? buttonsRow.addClass('hide-buttons') : buttonsRow.removeClass('hide-buttons');
+    buttonsHidden
+      ? buttonsRow.addClass('hide-buttons')
+      : buttonsRow.removeClass('hide-buttons');
     toggleButtonsButton.text(buttonsHidden ? '+' : '-');
   };
 
@@ -190,7 +192,9 @@
 
     toggleWatchedButton = jQuery(buttonTemplate);
     toggleUpcomingButton = jQuery(buttonTemplate);
-    toggleButtonsButton = jQuery(buttonTemplate).addClass('toggle-buttons-button');
+    toggleButtonsButton = jQuery(buttonTemplate).addClass(
+      'toggle-buttons-button'
+    );
 
     buttonsRow = jQuery(buttonsRowTemplate);
     buttonsRow.append(toggleWatchedButton);
@@ -234,15 +238,14 @@
   const buttonDestinationContainerSelector = `
     [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
     [page-subtype="playlist"][role="main"] ytd-item-section-renderer,
-    [page-subtype="subscriptions"][role="main"] ytd-section-list-renderer,
+    [page-subtype="subscriptions"][role="main"] ytd-shelf-renderer,
     ytd-search[role="main"] ytd-section-list-renderer
   `;
 
   const videosSelector = `
     [page-subtype="channels"][role="main"] ytd-rich-item-renderer,
     [page-subtype="playlist"][role="main"] ytd-playlist-video-renderer,
-    [page-subtype="subscriptions"][role="main"] ytd-grid-video-renderer,
-    [page-subtype="subscriptions"][role="main"] ytd-video-renderer,
+    [page-subtype="subscriptions"][role="main"] ytd-rich-item-renderer,
     ytd-search[role="main"] ytd-video-renderer
   `;
 
