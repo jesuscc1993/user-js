@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.06.10.22.29
+// @version        2023.06.10.22.40
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -19,6 +19,7 @@
   'use strict';
 
   const enableDebug = false;
+  const enableCount = false; // disabled due to corner cases where it would not update
 
   let buttonsContainer;
   let buttonsRow;
@@ -175,14 +176,16 @@
     hidden
       ? matchingVideos.addClass('mt-hidden')
       : matchingVideos.removeClass('mt-hidden');
-    const matchingVideosCount = matchingVideos && matchingVideos.length;
+    const params = enableCount
+      ? { matchingVideosCount: matchingVideos && matchingVideos.length }
+      : undefined;
 
-    setButtonState(button, buttonName, hidden, { matchingVideosCount });
+    setButtonState(button, buttonName, hidden, params);
   };
 
   const setButtonState = (button, buttonName, hidden, params) => {
     const suffix =
-      params?.matchingVideosCount !== undefined
+      enableCount && params?.matchingVideosCount !== undefined
         ? `(${params.matchingVideosCount} / ${videosTotal})`
         : '';
     button.text(`${buttonName} ${suffix}`);
@@ -296,7 +299,7 @@
         display: flex;
         justify-content: right;
         padding-left: 45px;
-        width: 612px;
+        width: 374px; /* 612px if count enabled */
         margin: 0 auto;
       }
 
@@ -311,7 +314,7 @@
       .mt-button {
         border-radius: 20px !important;
         margin: 0 !important;
-        min-width: 192px;
+        min-width: 112px; /* 192px if count enabled */
         text-align: center;
       }
 
