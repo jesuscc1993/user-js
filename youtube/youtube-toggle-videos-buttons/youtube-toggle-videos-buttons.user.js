@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.06.12.22.40
+// @version        2023.06.12.22.56
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -25,15 +25,17 @@
   let buttonsRow;
   let currentUrl;
   let toggleLiveButton;
-  let toggleShortButton;
+  let toggleShortsButton;
   let toggleUpcomingButton;
+  let toggleUploadsButton;
   let toggleWatchedButton;
   let toggleButtonsButton;
   let videosTotal;
 
   let liveHidden = await GM.getValue('liveHidden', false);
-  let shortHidden = await GM.getValue('shortHidden', false);
+  let shortsHidden = await GM.getValue('shortsHidden', false);
   let upcomingHidden = await GM.getValue('upcomingHidden', false);
+  let uploadsHidden = await GM.getValue('uploadsHidden', false);
   let watchedHidden = await GM.getValue('watchedHidden', false);
   let buttonsHidden = await GM.getValue('buttonsHidden', false);
 
@@ -52,12 +54,21 @@
     const videosCountChanged = oldVideosTotal !== videosTotal;
 
     const videosShouldBeHidden =
-      (liveHidden || shortHidden || upcomingHidden || watchedHidden) &&
+      (liveHidden ||
+        shortsHidden ||
+        upcomingHidden ||
+        uploadsHidden ||
+        watchedHidden) &&
       !!document.querySelectorAll(unprocessedVideosSelectors).length;
 
     const videosShouldBeShown =
-      (!liveHidden || !shortHidden || !upcomingHidden || !watchedHidden) &&
-      !!document.querySelectorAll(processedVideosSelectors).length;
+      !(
+        liveHidden &&
+        shortsHidden &&
+        upcomingHidden &&
+        uploadsHidden &&
+        watchedHidden
+      ) && !!document.querySelectorAll(processedVideosSelectors).length;
 
     const shouldIt =
       shouldRenderButton() &&
@@ -102,16 +113,18 @@
 
   const insertButtons = (buttonDestinationContainer) => {
     toggleLiveButton.off('click').on('click', toggleLiveVideos);
-    toggleShortButton.off('click').on('click', toggleShortVideos);
+    toggleShortsButton.off('click').on('click', toggleShortsVideos);
     toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
+    toggleUploadsButton.off('click').on('click', toggleUploadsVideos);
     toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
     toggleButtonsButton.off('click').on('click', toggleButtons);
     videosTotal = jQuery(videosSelector).length;
 
     const params = { matchingVideosCount: 0 };
     setButtonState(toggleLiveButton, i18n.live, liveHidden, params);
-    setButtonState(toggleShortButton, i18n.short, shortHidden, params);
+    setButtonState(toggleShortsButton, i18n.shorts, shortsHidden, params);
     setButtonState(toggleUpcomingButton, i18n.upcoming, upcomingHidden, params);
+    setButtonState(toggleUploadsButton, i18n.uploads, uploadsHidden, params);
     setButtonState(toggleWatchedButton, i18n.watched, watchedHidden, params);
 
     buttonDestinationContainer.prepend(buttonsContainer);
@@ -121,8 +134,9 @@
     debug(`Processing videos...`);
     videosTotal = jQuery(videosSelector).length;
     if (liveHidden) processLiveVideos();
-    if (shortHidden) processShortVideos();
+    if (shortsHidden) processShortsVideos();
     if (upcomingHidden) processUpcomingVideos();
+    if (uploadsHidden) processUploadsVideos();
     if (watchedHidden) processWatchedVideos();
     debug(`All videos processed`);
   };
@@ -133,16 +147,22 @@
     processLiveVideos();
   };
 
-  const toggleShortVideos = () => {
-    shortHidden = !shortHidden;
-    GM.setValue('shortHidden', shortHidden);
-    processShortVideos();
+  const toggleShortsVideos = () => {
+    shortsHidden = !shortsHidden;
+    GM.setValue('shortsHidden', shortsHidden);
+    processShortsVideos();
   };
 
   const toggleUpcomingVideos = () => {
     upcomingHidden = !upcomingHidden;
     GM.setValue('upcomingHidden', upcomingHidden);
     processUpcomingVideos();
+  };
+
+  const toggleUploadsVideos = () => {
+    uploadsHidden = !uploadsHidden;
+    GM.setValue('uploadsHidden', uploadsHidden);
+    processUploadsVideos();
   };
 
   const toggleWatchedVideos = () => {
@@ -164,12 +184,12 @@
     processVideos(toggleLiveButton, i18n.live, liveHidden, liveVideosSelector);
   };
 
-  const processShortVideos = () => {
+  const processShortsVideos = () => {
     processVideos(
-      toggleShortButton,
-      i18n.short,
-      shortHidden,
-      shortVideosSelector
+      toggleShortsButton,
+      i18n.shorts,
+      shortsHidden,
+      shortsVideosSelector
     );
   };
 
@@ -179,6 +199,15 @@
       i18n.upcoming,
       upcomingHidden,
       upcomingVideosSelector
+    );
+  };
+
+  const processUploadsVideos = () => {
+    processVideos(
+      toggleUploadsButton,
+      i18n.uploads,
+      uploadsHidden,
+      uploadsVideosSelector
     );
   };
 
@@ -220,14 +249,16 @@
     jQuery('head').append(baseStyle);
 
     toggleLiveButton = jQuery(toggleVideosButtonTemplate);
-    toggleShortButton = jQuery(toggleVideosButtonTemplate);
+    toggleShortsButton = jQuery(toggleVideosButtonTemplate);
     toggleUpcomingButton = jQuery(toggleVideosButtonTemplate);
+    toggleUploadsButton = jQuery(toggleVideosButtonTemplate);
     toggleWatchedButton = jQuery(toggleVideosButtonTemplate);
 
     buttonsRow = jQuery(buttonsRowTemplate);
     buttonsRow.append(toggleUpcomingButton);
+    buttonsRow.append(toggleUploadsButton);
     buttonsRow.append(toggleLiveButton);
-    buttonsRow.append(toggleShortButton);
+    buttonsRow.append(toggleShortsButton);
     buttonsRow.append(toggleWatchedButton);
 
     toggleButtonsButton = jQuery(toggleButtonsButtonTemplate);
@@ -253,15 +284,17 @@
     hide: 'Hide',
     show: 'Show',
     live: 'live',
-    short: 'shorts',
+    shorts: 'shorts',
     upcoming: 'upcoming',
+    uploads: 'videos',
     watched: 'watched',
   };
 
   // selectors
   const liveVideosSelector = `.badge-style-type-live-now-alternate`;
-  const shortVideosSelector = `[overlay-style="SHORTS"]`;
-  const upcomingVideosSelector = `[overlay-style="UPCOMING"]`;
+  const shortsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"]`;
+  const upcomingVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="UPCOMING"]`;
+  const uploadsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer:not([overlay-style="SHORTS"])`;
   const watchedVideosSelector = `[id="progress"]`;
 
   const buttonDestinationContainerSelector = `
