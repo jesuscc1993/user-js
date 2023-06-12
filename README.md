@@ -9,9 +9,11 @@ Requires a userscript loader extension:
 
 # List
 
+- [anilist/anilist-utils](anilist/anilist-utils)
 - [discord/discord-utils](discord/discord-utils)
 - [global/global-image-zoomer](global/global-image-zoomer)
 - [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
+- [nakama.social/nakama-utils](nakama.social/nakama-utils)
 - [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
 - [webtoon/webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)
 - [youtube/youtube-toggle-videos-buttons](youtube/youtube-toggle-videos-buttons)
