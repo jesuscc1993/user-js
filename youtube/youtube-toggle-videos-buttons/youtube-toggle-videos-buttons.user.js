@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
-// @description    Adds buttons to the subscriptions page and the channel videos/shorts/lives pages to filter out videos by type and/or state. The toggles can be hidden/shown at any time by pressing the button added to the header.
-// @version        2023.06.13.17.00
+// @description    Adds buttons to filter out videos by type and/or status. The toggles can be hidden/shown at any time by pressing the button added to the header.
+// @version        2023.06.13.17.21
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -228,7 +228,7 @@
   };
 
   const setButtonState = (button, hidden) => {
-    hidden ? button.removeClass('on') : button.addClass('on');
+    button.toggleClass('on', !hidden);
   };
 
   const debug = enableDebug
@@ -277,10 +277,10 @@
   const scriptPrefix = `[Toggle videos buttons]`;
 
   const urlPattern =
-    /youtube.com\/((channel\/|c\/|@)(\w*)(\/(featured|videos|shorts|streams)|$)|feed\/subscriptions|results|playlist)/;
+    /youtube.com(\/?$|\/((channel\/|c\/|@)(\w*)(\/(featured|videos|shorts|streams)|\/?$)|feed\/subscriptions|results|playlist))/;
 
   const urlWithTypesPattern =
-    /youtube.com\/((channel\/|c\/|@)(\w*)(\/(featured)|$)|feed\/subscriptions|results|playlist)/;
+    /youtube.com(\/?$|\/((channel\/|c\/|@)(\w*)(\/(featured)|\/?$)|feed\/subscriptions|results|playlist))/;
 
   // texts
   const i18n = {
@@ -294,15 +294,27 @@
   };
 
   // selectors
-  const liveVideosSelector = `.badge-style-type-live-now-alternate`;
-  const shortsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"], .ytd-thumbnail[href^="/shorts/"]`;
-  const upcomingVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="UPCOMING"]`;
-  const uploadsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer:not([overlay-style="SHORTS"])`;
-  const watchedVideosSelector = `[id="progress"]`;
+  const liveVideosSelector = `
+    [role="main"] .badge-style-type-live-now-alternate
+  `;
+  const shortsVideosSelector = `
+    [role="main"] ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"],
+    [role="main"] .ytd-thumbnail[href^="/shorts/"]
+  `;
+  const upcomingVideosSelector = `
+    [role="main"] ytd-thumbnail-overlay-time-status-renderer[overlay-style="UPCOMING"]
+  `;
+  const uploadsVideosSelector = `
+    [role="main"] ytd-thumbnail-overlay-time-status-renderer:not([overlay-style="SHORTS"])
+  `;
+  const watchedVideosSelector = `
+    [role="main"] [id="progress"]
+  `;
 
   const buttonDestinationContainerSelector = `
     [page-subtype="channels"][role="main"] #primary > ytd-section-list-renderer,
     [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
+    [page-subtype="home"][role="main"] #primary > ytd-rich-grid-renderer,
     [page-subtype="playlist"][role="main"] ytd-item-section-renderer,
     [page-subtype="subscriptions"][role="main"] ytd-shelf-renderer,
     ytd-search[role="main"] ytd-section-list-renderer
@@ -311,11 +323,14 @@
   const buttonsToggleDestinationSelector = `#masthead #end`;
 
   const videosSelector = `
-    [role="main"] ytd-reel-shelf-renderer,
-    [role="main"] ytd-reel-item-renderer,
+    [role="main"] ytd-grid-video-renderer,
     [role="main"] ytd-playlist-video-renderer,
     [role="main"] ytd-rich-item-renderer,
-    [role="main"] ytd-video-renderer
+    [role="main"] ytd-video-renderer,
+
+    [role="main"] .ytd-rich-section-renderer[is-shorts],
+    [role="main"] ytd-reel-shelf-renderer,
+    [role="main"] ytd-reel-item-renderer
   `;
 
   const unprocessedVideosSelectors = videosSelector
@@ -413,7 +428,7 @@
       [page-subtype="channels"] .mt-toggle-videos-container {
         margin-top: 24px;
       }
-      [page-subtype="channels"] .mt-button.type,
+      [page-subtype="channels"] ytd-rich-grid-renderer .mt-button.type,
       ytd-rich-grid-renderer[is-shorts-grid] .mt-button {
         background: transparent !important;
         opacity: .1;
