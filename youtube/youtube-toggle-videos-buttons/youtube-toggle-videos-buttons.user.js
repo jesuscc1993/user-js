@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
-// @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.06.12.22.59
+// @description    Adds buttons to the subscriptions page and the channel videos/shorts/lives pages to filter out videos by type and/or state. The toggles can be hidden/shown at any time by pressing the button added to the header.
+// @version        2023.06.13.17.00
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -19,27 +19,35 @@
   'use strict';
 
   const enableDebug = false;
-  const enableCount = false; // disabled due to corner cases where it would not update
+
+  let currentUrl;
+  let videosTotal;
 
   let buttonsContainer;
-  let currentUrl;
+  let toggleButtonsButton;
   let toggleLiveButton;
   let toggleShortsButton;
   let toggleUpcomingButton;
   let toggleUploadsButton;
   let toggleWatchedButton;
-  let toggleButtonsButton;
-  let videosTotal;
 
+  let buttonsHidden = await GM.getValue('buttonsHidden', false);
   let liveHidden = await GM.getValue('liveHidden', false);
   let shortsHidden = await GM.getValue('shortsHidden', false);
   let upcomingHidden = await GM.getValue('upcomingHidden', false);
   let uploadsHidden = await GM.getValue('uploadsHidden', false);
   let watchedHidden = await GM.getValue('watchedHidden', false);
-  let buttonsHidden = await GM.getValue('buttonsHidden', false);
 
   const shouldRenderButton = () => {
     return location.href.match(urlPattern) !== null;
+  };
+
+  const shouldFilterByTypeButton = () => {
+    return location.href.match(urlWithTypesPattern) !== null;
+  };
+
+  const shouldFilterByStatus = () => {
+    return true;
   };
 
   const shouldRunScript = () => {
@@ -89,15 +97,15 @@
 
   const runButtonTask = () => {
     if (shouldRenderButton()) {
-      const buttonDestinationContainer = jQuery(
+      const buttonsDestinationContainer = jQuery(
         buttonDestinationContainerSelector
-      ).first();
+      );
 
       if (
-        buttonDestinationContainer.length &&
-        !buttonDestinationContainer.find(buttonsContainer).length
+        buttonsDestinationContainer.length &&
+        !buttonsDestinationContainer.find(buttonsContainer).length
       ) {
-        insertButtons(buttonDestinationContainer);
+        insertButtons(buttonsDestinationContainer);
       }
     } else {
       buttonsContainer.remove();
@@ -117,23 +125,21 @@
     toggleUpcomingButton.off('click').on('click', toggleUpcomingVideos);
     toggleUploadsButton.off('click').on('click', toggleUploadsVideos);
     toggleWatchedButton.off('click').on('click', toggleWatchedVideos);
-    toggleButtonsButton.off('click').on('click', toggleButtons);
-    videosTotal = jQuery(videosSelector).length;
 
-    const params = { matchingVideosCount: 0 };
-    setButtonState(toggleLiveButton, i18n.live, liveHidden, params);
-    setButtonState(toggleShortsButton, i18n.shorts, shortsHidden, params);
-    setButtonState(toggleUpcomingButton, i18n.upcoming, upcomingHidden, params);
-    setButtonState(toggleUploadsButton, i18n.uploads, uploadsHidden, params);
-    setButtonState(toggleWatchedButton, i18n.watched, watchedHidden, params);
+    setButtonState(toggleLiveButton, liveHidden);
+    setButtonState(toggleShortsButton, shortsHidden);
+    setButtonState(toggleUpcomingButton, upcomingHidden);
+    setButtonState(toggleUploadsButton, uploadsHidden);
+    setButtonState(toggleWatchedButton, watchedHidden);
 
     buttonDestinationContainer.prepend(buttonsContainer);
+
+    toggleButtonsButton.off('click').on('click', toggleButtons);
     jQuery(buttonsToggleDestinationSelector).prepend(toggleButtonsButton);
   };
 
   const processAllVideos = () => {
     debug(`Processing videos...`);
-    videosTotal = jQuery(videosSelector).length;
     if (liveHidden) processLiveVideos();
     if (shortsHidden) processShortsVideos();
     if (upcomingHidden) processUpcomingVideos();
@@ -181,63 +187,47 @@
   };
 
   const processLiveVideos = () => {
-    processVideos(toggleLiveButton, i18n.live, liveHidden, liveVideosSelector);
+    if (shouldFilterByTypeButton()) {
+      processVideos(toggleLiveButton, liveHidden, liveVideosSelector);
+    }
   };
 
   const processShortsVideos = () => {
-    processVideos(
-      toggleShortsButton,
-      i18n.shorts,
-      shortsHidden,
-      shortsVideosSelector
-    );
+    if (shouldFilterByTypeButton()) {
+      processVideos(toggleShortsButton, shortsHidden, shortsVideosSelector);
+    }
   };
 
   const processUpcomingVideos = () => {
-    processVideos(
-      toggleUpcomingButton,
-      i18n.upcoming,
-      upcomingHidden,
-      upcomingVideosSelector
-    );
+    if (shouldFilterByStatus()) {
+      processVideos(
+        toggleUpcomingButton,
+        upcomingHidden,
+        upcomingVideosSelector
+      );
+    }
   };
 
   const processUploadsVideos = () => {
-    processVideos(
-      toggleUploadsButton,
-      i18n.uploads,
-      uploadsHidden,
-      uploadsVideosSelector
-    );
+    if (shouldFilterByTypeButton()) {
+      processVideos(toggleUploadsButton, uploadsHidden, uploadsVideosSelector);
+    }
   };
 
   const processWatchedVideos = () => {
-    processVideos(
-      toggleWatchedButton,
-      i18n.watched,
-      watchedHidden,
-      watchedVideosSelector
-    );
+    if (shouldFilterByStatus()) {
+      processVideos(toggleWatchedButton, watchedHidden, watchedVideosSelector);
+    }
   };
 
-  const processVideos = (button, buttonName, hidden, matchingSelector) => {
+  const processVideos = (button, hidden, matchingSelector) => {
     const matchingVideos = jQuery(matchingSelector).parents(videosSelector);
-    hidden
-      ? matchingVideos.addClass('mt-hidden')
-      : matchingVideos.removeClass('mt-hidden');
-    const params = enableCount
-      ? { matchingVideosCount: matchingVideos && matchingVideos.length }
-      : undefined;
+    matchingVideos.toggleClass('mt-hidden', hidden);
 
-    setButtonState(button, buttonName, hidden, params);
+    setButtonState(button, hidden);
   };
 
-  const setButtonState = (button, buttonName, hidden, params) => {
-    const suffix =
-      enableCount && params?.matchingVideosCount !== undefined
-        ? `(${params.matchingVideosCount} / ${videosTotal})`
-        : '';
-    button.text(`${buttonName} ${suffix}`);
+  const setButtonState = (button, hidden) => {
     hidden ? button.removeClass('on') : button.addClass('on');
   };
 
@@ -248,11 +238,25 @@
   const initialize = () => {
     jQuery('head').append(baseStyle);
 
-    toggleLiveButton = jQuery(toggleVideosButtonTemplate);
-    toggleShortsButton = jQuery(toggleVideosButtonTemplate);
-    toggleUpcomingButton = jQuery(toggleVideosButtonTemplate);
-    toggleUploadsButton = jQuery(toggleVideosButtonTemplate);
-    toggleWatchedButton = jQuery(toggleVideosButtonTemplate);
+    toggleLiveButton = jQuery(toggleVideosButtonTemplate)
+      .addClass(`${i18n.live} type`)
+      .text(i18n.live);
+
+    toggleShortsButton = jQuery(toggleVideosButtonTemplate)
+      .addClass(`${i18n.shorts} type`)
+      .text(i18n.shorts);
+
+    toggleUpcomingButton = jQuery(toggleVideosButtonTemplate)
+      .addClass(`${i18n.upcoming} status`)
+      .text(i18n.upcoming);
+
+    toggleUploadsButton = jQuery(toggleVideosButtonTemplate)
+      .addClass(`${i18n.uploads} type`)
+      .text(i18n.uploads);
+
+    toggleWatchedButton = jQuery(toggleVideosButtonTemplate)
+      .addClass(`${i18n.watched} status`)
+      .text(i18n.watched);
 
     buttonsContainer = jQuery(buttonsContainerTemplate);
     buttonsContainer.append(toggleUpcomingButton);
@@ -273,12 +277,13 @@
   const scriptPrefix = `[Toggle videos buttons]`;
 
   const urlPattern =
-    /youtube.com\/((channel\/|c\/|@)(.*)\/videos|feed\/subscriptions|results|playlist)/;
+    /youtube.com\/((channel\/|c\/|@)(\w*)(\/(featured|videos|shorts|streams)|$)|feed\/subscriptions|results|playlist)/;
+
+  const urlWithTypesPattern =
+    /youtube.com\/((channel\/|c\/|@)(\w*)(\/(featured)|$)|feed\/subscriptions|results|playlist)/;
 
   // texts
   const i18n = {
-    hide: 'Hide',
-    show: 'Show',
     toggleButtons: 'Toggle video filter buttons',
 
     live: 'live',
@@ -290,12 +295,13 @@
 
   // selectors
   const liveVideosSelector = `.badge-style-type-live-now-alternate`;
-  const shortsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"]`;
+  const shortsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="SHORTS"], .ytd-thumbnail[href^="/shorts/"]`;
   const upcomingVideosSelector = `ytd-thumbnail-overlay-time-status-renderer[overlay-style="UPCOMING"]`;
   const uploadsVideosSelector = `ytd-thumbnail-overlay-time-status-renderer:not([overlay-style="SHORTS"])`;
   const watchedVideosSelector = `[id="progress"]`;
 
   const buttonDestinationContainerSelector = `
+    [page-subtype="channels"][role="main"] #primary > ytd-section-list-renderer,
     [page-subtype="channels"][role="main"] ytd-rich-grid-renderer,
     [page-subtype="playlist"][role="main"] ytd-item-section-renderer,
     [page-subtype="subscriptions"][role="main"] ytd-shelf-renderer,
@@ -305,10 +311,11 @@
   const buttonsToggleDestinationSelector = `#masthead #end`;
 
   const videosSelector = `
-    [page-subtype="channels"][role="main"] ytd-rich-item-renderer,
-    [page-subtype="playlist"][role="main"] ytd-playlist-video-renderer,
-    [page-subtype="subscriptions"][role="main"] ytd-rich-item-renderer,
-    ytd-search[role="main"] ytd-video-renderer
+    [role="main"] ytd-reel-shelf-renderer,
+    [role="main"] ytd-reel-item-renderer,
+    [role="main"] ytd-playlist-video-renderer,
+    [role="main"] ytd-rich-item-renderer,
+    [role="main"] ytd-video-renderer
   `;
 
   const unprocessedVideosSelectors = videosSelector
@@ -356,8 +363,7 @@
     <style>
       .mt-toggle-videos-container {
         display: flex;
-        justify-content: right;
-        width: 374px; /* 612px if count enabled */
+        justify-content: center;
         margin: 0 auto;
       }
 
@@ -373,7 +379,7 @@
         border-radius: 0 !important;
         margin: 0 !important;
         text-align: center;
-        min-width: 112px; /* 192px if count enabled */
+        min-width: 112px;
         background: var(--yt-spec-additive-background) !important;
       }
       .mt-toggle-videos-button.on {
@@ -406,6 +412,12 @@
 
       [page-subtype="channels"] .mt-toggle-videos-container {
         margin-top: 24px;
+      }
+      [page-subtype="channels"] .mt-button.type,
+      ytd-rich-grid-renderer[is-shorts-grid] .mt-button {
+        background: transparent !important;
+        opacity: .1;
+        pointer-events: none;
       }
 
       [page-subtype="playlist"] .mt-toggle-videos-container {
