@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Toggle videos buttons
 // @description    Adds buttons to hide watched and/or upcoming videos from the subscription page / channel videos tab.
-// @version        2023.06.12.22.58
+// @version        2023.06.12.22.59
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -22,7 +22,6 @@
   const enableCount = false; // disabled due to corner cases where it would not update
 
   let buttonsContainer;
-  let buttonsRow;
   let currentUrl;
   let toggleLiveButton;
   let toggleShortsButton;
@@ -102,6 +101,7 @@
       }
     } else {
       buttonsContainer.remove();
+      toggleButtonsButton.remove();
     }
   };
 
@@ -128,6 +128,7 @@
     setButtonState(toggleWatchedButton, i18n.watched, watchedHidden, params);
 
     buttonDestinationContainer.prepend(buttonsContainer);
+    jQuery(buttonsToggleDestinationSelector).prepend(toggleButtonsButton);
   };
 
   const processAllVideos = () => {
@@ -175,9 +176,8 @@
     buttonsHidden = typeof newValue == 'boolean' ? newValue : !buttonsHidden;
     GM.setValue('buttonsHidden', buttonsHidden);
     buttonsHidden
-      ? buttonsRow.addClass('hide-buttons')
-      : buttonsRow.removeClass('hide-buttons');
-    toggleButtonsButton.text(buttonsHidden ? '+' : '-');
+      ? buttonsContainer.addClass('hide-buttons')
+      : buttonsContainer.removeClass('hide-buttons');
   };
 
   const processLiveVideos = () => {
@@ -254,18 +254,14 @@
     toggleUploadsButton = jQuery(toggleVideosButtonTemplate);
     toggleWatchedButton = jQuery(toggleVideosButtonTemplate);
 
-    buttonsRow = jQuery(buttonsRowTemplate);
-    buttonsRow.append(toggleUpcomingButton);
-    buttonsRow.append(toggleLiveButton);
-    buttonsRow.append(toggleUploadsButton);
-    buttonsRow.append(toggleShortsButton);
-    buttonsRow.append(toggleWatchedButton);
+    buttonsContainer = jQuery(buttonsContainerTemplate);
+    buttonsContainer.append(toggleUpcomingButton);
+    buttonsContainer.append(toggleLiveButton);
+    buttonsContainer.append(toggleUploadsButton);
+    buttonsContainer.append(toggleShortsButton);
+    buttonsContainer.append(toggleWatchedButton);
 
     toggleButtonsButton = jQuery(toggleButtonsButtonTemplate);
-
-    buttonsContainer = jQuery(buttonsContainerTemplate);
-    buttonsContainer.append(buttonsRow);
-    buttonsContainer.append(toggleButtonsButton);
     toggleButtons(buttonsHidden);
 
     setInterval(runButtonTask, 150);
@@ -283,6 +279,8 @@
   const i18n = {
     hide: 'Hide',
     show: 'Show',
+    toggleButtons: 'Toggle video filter buttons',
+
     live: 'live',
     shorts: 'shorts',
     upcoming: 'upcoming',
@@ -303,6 +301,8 @@
     [page-subtype="subscriptions"][role="main"] ytd-shelf-renderer,
     ytd-search[role="main"] ytd-section-list-renderer
   `;
+
+  const buttonsToggleDestinationSelector = `#masthead #end`;
 
   const videosSelector = `
     [page-subtype="channels"][role="main"] ytd-rich-item-renderer,
@@ -331,18 +331,24 @@
 
   // templates
   const toggleVideosButtonTemplate = `
-    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-button mt-toggle-videos-button" />
+    <tp-yt-paper-button class="ytd-subscribe-button-renderer mt-button mt-toggle-videos-button" />
   `;
+
   const toggleButtonsButtonTemplate = `
-    <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer mt-button mt-toggle-buttons-button" />
+    <tp-yt-paper-button class="mt-button mt-toggle-buttons-button">
+      <svg viewBox="0 0 24 24">
+        <g>
+          <path fill="#FFF" d="M20,7H4V6h16V7z M22,9v12H2V9H22z M15,15l-5-3v6L15,15z M17,3H7v1h10V3z"></path>
+        </g>
+      </svg>
+      <tp-yt-paper-tooltip class="ytd-topbar-menu-button-renderer">
+        ${i18n.toggleButtons}
+      </tp-yt-paper-tooltip>
+    </tp-yt-paper-button>
   `;
 
   const buttonsContainerTemplate = `
     <div class="mt-toggle-videos-container"></div>
-  `;
-
-  const buttonsRowTemplate = `
-    <div class="mt-toggle-videos-buttons-row"></div>
   `;
 
   // style
@@ -351,30 +357,23 @@
       .mt-toggle-videos-container {
         display: flex;
         justify-content: right;
-        padding-left: 45px;
         width: 374px; /* 612px if count enabled */
         margin: 0 auto;
       }
 
-      .mt-toggle-videos-buttons-row {
-        display: flex;
-      }
-
-      .mt-toggle-videos-buttons-row.hide-buttons .mt-toggle-videos-button:not(.toggle-buttons-button) {
+      .mt-toggle-videos-container.hide-buttons {
         display: none;
       }
 
       .mt-button {
         border-radius: 20px !important;
-        margin: 0 !important;
-        min-width: 112px; /* 192px if count enabled */
-        text-align: center;
       }
 
       .mt-toggle-videos-button {
         border-radius: 0 !important;
         margin: 0 !important;
         text-align: center;
+        min-width: 112px; /* 192px if count enabled */
         background: var(--yt-spec-additive-background) !important;
       }
       .mt-toggle-videos-button.on {
@@ -389,11 +388,16 @@
 
       .mt-toggle-buttons-button {
         background: transparent !important;
-        flex: 0;
-        min-width: 37px;
+        height: 40px;
+        margin: 0 8px 0 0;
+        min-width: 40px;
+        padding: 0 !important;
       }
       .mt-toggle-buttons-button:hover {
         background: var(--yt-spec-10-percent-layer) !important;
+      }
+      .mt-toggle-buttons-button svg {
+        width: 24px;
       }
 
       .mt-hidden {
