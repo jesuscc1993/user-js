@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2023.06.12.16.34
+// @version        2023.06.27.17.55
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -22,7 +22,7 @@
   };
 
   const addLinkToSearch = () => {
-    const title = jQuery('h1').text().replace(/\s+/g, ' ').replace(/(^\s| - |:)/g, '');
+    const title = jQuery('h1').text().replace(/\s+/g, ' ').replace(/(^\s| - |:|!)/g, '');
     const encodedTitle = encodeURI(title);
 
     const mediaType = location.href.indexOf('https://anilist.co/anime') > -1 ? MEDIA_TYPE.anime : MEDIA_TYPE.manga;
