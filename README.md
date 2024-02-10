@@ -15,5 +15,6 @@ Requires a userscript loader extension:
 - [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
 - [nakama.social/nakama-utils](nakama.social/nakama-utils)
 - [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
+- [steamdb/steamdb-big-game-banners](steamdb/steamdb-big-game-banners)
 - [webtoon/webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)
 - [youtube/youtube-toggle-videos-buttons](youtube/youtube-toggle-videos-buttons)
