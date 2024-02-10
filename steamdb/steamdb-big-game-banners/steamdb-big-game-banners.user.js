@@ -59,7 +59,7 @@
     .applogo img {
       height: ${bannerHeight}px !important;
       width: ${bannerWidth}px !important;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .table-sales td:nth-child(3) {
