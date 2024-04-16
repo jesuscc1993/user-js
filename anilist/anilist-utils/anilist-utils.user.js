@@ -64,7 +64,7 @@
           break;
 
         // RMB
-        case 3:
+        default:
           return;
       }
     });
