@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2023.09.30.01.20
+// @version        2024.04.16.22.29
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -16,49 +16,112 @@
 (() => {
   'use strict';
 
-  const size = '720';
-
-  const nyaaSearch = `https://nyaa.si/?f=0&s=seeders&o=desc`;
-
-  const MEDIA_TYPE = {
-    anime: { id: '1_2', label: 'anime' },
-    manga: { id: '3_1', label: 'manga' }
-  };
-
   const addLinkToSearch = () => {
-    const title = jQuery('h1').text().replace(/\s+/g, ' ').replace(/(^\s+| - |:|!|\s+$)/g, '');
-    const encodedTitle = encodeURI(title);
-
-    const mediaType = location.href.indexOf('https://anilist.co/anime') > -1 ? MEDIA_TYPE.anime : MEDIA_TYPE.manga;
-
     const searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');
 
-    const ytAnchor = `<a title="Search for videos" href="https://www.youtube.com/results?search_query=${encodedTitle}+${mediaType.label}"></a>`;
-    const ytIcon = `<img src="https://i.imgur.com/GGQjnb9.png">`;
-    appendSearchAnchor(searchWrapper, ytAnchor, ytIcon);
+    const youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
+    bindSearchAnchor(youTubeAnchor, getVideoSearchUrl);
+    appendSearchAnchor(searchWrapper, youTubeAnchor, youTubeIconUrl);
 
-    const picturesAnchor = `<a title="Search for images" href="https://www.google.es/search?tbm=isch&q=${encodedTitle} ${mediaType.label}"></a>`;
-    const picturesIcon = `<img src="https://i.imgur.com/xeDBHKU.png">`;
-    appendSearchAnchor(searchWrapper, picturesAnchor, picturesIcon);
+    const imagesAnchor = jQuery(`<a title="Search for images"></a>`);
+    bindSearchAnchor(imagesAnchor, getImageSearchUrl);
+    appendSearchAnchor(searchWrapper, imagesAnchor, imagesIconUrl);
 
-    const torrentAnchor = `<a title="Search for torrents" href="${nyaaSearch}&c=${mediaType.id}&q=${size}+${encodedTitle}"></a>`;
-    const torrentIcon = `<img src="https://i.imgur.com/y0sSoXk.png">`;
-    appendSearchAnchor(searchWrapper, torrentAnchor, torrentIcon);
+    const torrentAnchor = jQuery(`<a title="Search for torrents"></a>`);
+    bindSearchAnchor(torrentAnchor, getTorrentSearchUrl);
+    appendSearchAnchor(searchWrapper, torrentAnchor, torrentIconUrl);
 
-    const subsPleaseAnchor = `<a title="Search for SubsPlease torrents" href="${nyaaSearch}&c=${mediaType.id}&q=${size}+SubsPlease+${encodedTitle}"></a>`;
-    const subsPleaseIcon = `<img src="https://i.imgur.com/21j5OcW.png">`;
-    appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIcon);
+    const subsPleaseAnchor = jQuery(
+      `<a title="Search for SubsPlease torrents"></a>`
+    );
+    bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
+    appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
 
     jQuery('.cover-wrap-inner').append(searchWrapper);
 
     jQuery('head').append(style);
-  }
+  };
 
-  const appendSearchAnchor = (container, anchorTpl, iconTpl) => {
-    const anchor = jQuery(anchorTpl);
-    anchor.append(iconTpl);
+  const appendSearchAnchor = (container, anchor, iconUrl) => {
+    anchor.addClass('custom-search');
+    anchor.append(`<img src="${iconUrl}">`);
     container.append(anchor);
-  }
+  };
+
+  const bindSearchAnchor = (anchor, getSearchUrl) => {
+    anchor.on('mousedown', (e) => {
+      switch (e.which) {
+        // LMB
+        case 1:
+          e.preventDefault();
+          location.assign(getSearchUrl());
+          break;
+
+        // RMB
+        case 2:
+          e.preventDefault();
+          window.open(getSearchUrl());
+          break;
+
+        // RMB
+        case 3:
+          return;
+      }
+    });
+  };
+
+  const getVideoSearchUrl = () => {
+    return `${youTubeSearch}${getEncodedTitle()}+${getMediaType().label}`;
+  };
+
+  const getImageSearchUrl = () => {
+    return `${googleSearch}${getEncodedTitle()}+${getMediaType().label}`;
+  };
+
+  const getTorrentSearchUrl = () => {
+    return `${nyaaSearch}&c=${
+      getMediaType().id
+    }&q=${videoResolution}+${getEncodedTitle()}`;
+  };
+
+  const getSubsPleaseSearchUrl = () => {
+    return `${nyaaSearch}&c=${
+      getMediaType().id
+    }&q=${videoResolution}+SubsPlease+${getEncodedTitle()}`;
+  };
+
+  const getTitle = () => {
+    return jQuery('h1')
+      .text()
+      .replace(/\s+/g, ' ')
+      .replace(/(^\s+| - |:|!|\s+$)/g, '');
+  };
+
+  const getEncodedTitle = () => {
+    return encodeURI(getTitle());
+  };
+
+  const getMediaType = () => {
+    return location.href.indexOf('https://anilist.co/anime') > -1
+      ? MediaType.anime
+      : MediaType.manga;
+  };
+
+  const videoResolution = '720';
+
+  const googleSearch = `https://www.google.es/search?udm=2&q=`;
+  const nyaaSearch = `https://nyaa.si/?f=0&s=seeders&o=desc`;
+  const youTubeSearch = `https://www.youtube.com/results?search_query=`;
+
+  const imagesIconUrl = 'https://i.imgur.com/xeDBHKU.png';
+  const subsPleaseIconUrl = 'https://i.imgur.com/21j5OcW.png';
+  const torrentIconUrl = 'https://i.imgur.com/y0sSoXk.png';
+  const youTubeIconUrl = 'https://i.imgur.com/GGQjnb9.png';
+
+  const MediaType = {
+    anime: { id: '1_2', label: 'anime' },
+    manga: { id: '3_1', label: 'manga' },
+  };
 
   const style = `
     <style>
@@ -68,11 +131,12 @@
         margin-bottom: 20px;
       }
 
-      .custom-search-wrapper > * {
+      .custom-search {
         display: inline-block;
+        cursor: pointer;
       }
 
-      .custom-search-wrapper img{
+      .custom-search-wrapper img {
         width: 35px;
         height: auto;
       }
@@ -81,7 +145,7 @@
         margin-top: 224px !important;
       }
     </style>
-  `
+  `;
 
   setTimeout(addLinkToSearch, 500);
 })();
