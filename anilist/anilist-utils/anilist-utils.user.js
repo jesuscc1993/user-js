@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2024.04.16.22.29
+// @version        2024.04.18.23.06
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -16,9 +16,7 @@
 (() => {
   'use strict';
 
-  const addLinkToSearch = () => {
-    const searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');
-
+  const generateSearchLinks = () => {
     const youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
     bindSearchAnchor(youTubeAnchor, getVideoSearchUrl);
     appendSearchAnchor(searchWrapper, youTubeAnchor, youTubeIconUrl);
@@ -36,10 +34,13 @@
     );
     bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
     appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
+  };
 
-    jQuery('.cover-wrap-inner').append(searchWrapper);
-
-    jQuery('head').append(style);
+  const addLinkToSearch = () => {
+    const container = jQuery('.cover-wrap-inner');
+    if (container.length && !container.find('.custom-search-wrapper').length) {
+      container.append(searchWrapper);
+    }
   };
 
   const appendSearchAnchor = (container, anchor, iconUrl) => {
@@ -107,6 +108,17 @@
       : MediaType.manga;
   };
 
+  const initialize = () => {
+    jQuery('head').append(style);
+
+    generateSearchLinks();
+    setTimeout(addLinkToSearch, 150);
+
+    setInterval(addLinkToSearch, 1000);
+  };
+
+  const searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');
+
   const videoResolution = '720';
 
   const googleSearch = `https://www.google.es/search?udm=2&q=`;
@@ -147,5 +159,5 @@
     </style>
   `;
 
-  setTimeout(addLinkToSearch, 500);
+  initialize();
 })();
