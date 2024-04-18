@@ -2,10 +2,11 @@
 // @name            Fanbox utils
 // @description     Utilities for Fanbox
 // @author          MetalTxus
-// @match           https://hnamomo.fanbox.cc/*
-// @version         2024.06.18.20.40
+// @match           https://*.fanbox.cc/*
+// @version         2024.06.18.23.14
 
 // @require         http://code.jquery.com/jquery-3.2.1.min.js
+// @icon            https://fanbox.cc/favicon.ico
 // ==/UserScript==
 
 /* globals jQuery */
@@ -17,10 +18,12 @@
 
   const scrollContentIntoView = () => {
     const postContent = jQuery(
-      '[class*="PostDetailPage__Wrapper"] [class*="FileContent__Wrapper"]'
-    );
+      '[class*="PostDetailPage__Wrapper"] article:not(.scrolled)'
+    ).eq(0);
+
     if (postContent.length) {
-      postContent.eq(0).css({ 'scroll-margin-top': headerHeight });
+      postContent.addClass('scrolled');
+      postContent.css({ 'scroll-margin-top': '96px' });
       postContent[0].scrollIntoView();
     } else if (initAttempt++ < maxTries) {
       setTimeout(scrollContentIntoView, 1000);
@@ -33,7 +36,6 @@
   };
 
   const maxTries = 5;
-  const headerHeight = '64px';
 
   window.addEventListener('focus', initialize);
   initialize();
