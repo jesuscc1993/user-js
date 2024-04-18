@@ -8,7 +8,7 @@
 // @require         http://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
 
-/* globals jQuery setUpKeyNavigation */
+/* globals jQuery */
 
 (() => {
   'use strict';
