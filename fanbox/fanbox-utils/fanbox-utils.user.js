@@ -3,7 +3,7 @@
 // @description     Utilities for Fanbox
 // @author          MetalTxus
 // @match           https://hnamomo.fanbox.cc/*
-// @version         2024.06.18.20.16
+// @version         2024.06.18.20.39
 
 // @require         http://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
@@ -13,7 +13,7 @@
 (() => {
   'use strict';
 
-  let tries = 5;
+  let initAttempt = 0;
 
   const scrollContentIntoView = () => {
     const postContent = jQuery(
@@ -22,12 +22,20 @@
     if (postContent.length) {
       postContent.eq(0).css({ 'scroll-margin-top': headerHeight });
       postContent[0].scrollIntoView();
-    } else if (tries-- > 0) {
+    } else if (initAttempt++ < maxTries) {
       setTimeout(scrollContentIntoView, 1000);
     }
   };
 
-  scrollContentIntoView();
+  const initialize = () => {
+    initAttempt = 0;
+    scrollContentIntoView();
+  };
 
+  const maxTries = 5;
   const headerHeight = '64px';
+
+  // jQuery(window).on('focus', initialize);
+  // jQuery(window).focus(initialize);
+  initialize();
 })();
