@@ -3,7 +3,7 @@
 // @description     Utilities for Fanbox
 // @author          MetalTxus
 // @match           https://hnamomo.fanbox.cc/*
-// @version         2024.06.18.20.39
+// @version         2024.06.18.20.40
 
 // @require         http://code.jquery.com/jquery-3.2.1.min.js
 // ==/UserScript==
@@ -35,7 +35,6 @@
   const maxTries = 5;
   const headerHeight = '64px';
 
-  // jQuery(window).on('focus', initialize);
-  // jQuery(window).focus(initialize);
+  window.addEventListener('focus', initialize);
   initialize();
 })();
