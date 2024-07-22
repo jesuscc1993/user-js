@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           HumbleBundle - Unredeemed Game List Compiler
 // @description    Compiles a list of the unredeemed games
-// @version        2022.09.19.11.12
+// @version        2024.07.22.19.42
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -24,12 +24,22 @@
     jQuery('.jump-to-page[data-index="0"]').click();
 
     setTimeout(processPage, 150);
-  }
+  };
 
   const processPage = () => {
-    jQuery('.game-name h4').each((i, e) => {
-      const name = e.textContent;
-      const link = `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
+    const names = jQuery('.game-name h4')
+      .get()
+      .map((e) => e.textContent);
+    names.sort();
+    names.forEach((name) => {
+      const link = name.includes('Humble Choice')
+        ? name
+            .toLowerCase()
+            .replace(
+              /(.*?)\s(.*?)\s.*/,
+              `https://www.humblebundle.com/membership/$1-$2`
+            )
+        : `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
 
       games.push(`
         <li>
@@ -47,7 +57,7 @@
     } else {
       outputGames();
     }
-  }
+  };
 
   const outputGames = () => {
     const html = `
@@ -67,7 +77,7 @@
 
         <body>
           <ul>
-            ${games.sort().join('')}
+            ${games.join('')}
           </ul>
 
           <p>
@@ -77,7 +87,7 @@
       </html>
     `;
     downloadFile(html, 'unredeemed-humblebundle-games-list.html', 'text/plain');
-  }
+  };
 
   const downloadFile = (content, fileName, type) => {
     const file = new Blob([content], { type });
@@ -103,7 +113,7 @@
     `);
     button.click(compileGamesList);
     jQuery('.search').before(button);
-  }
+  };
 
   setTimeout(initialize, 150);
 })();
