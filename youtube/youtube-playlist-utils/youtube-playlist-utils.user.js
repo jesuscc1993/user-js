@@ -52,10 +52,15 @@
     const hours = Math.floor(length / 3600);
     const minutes = Math.floor((length % 3600) / 60);
     const seconds = length % 60;
+    const minUnit = hours ? 3 : minutes ? 2 : 1;
 
-    return `${hours ? `${formatTimeToken(hours, false)}:` : ''}${
-      minutes ? `${formatTimeToken(minutes, !!hours)}:` : ''
-    }${formatTimeToken(seconds, !!minutes)}`;
+    const formattedHours =
+      minUnit > 2 ? `${formatTimeToken(hours, false)}:` : '';
+    const formattedMinutes =
+      minUnit > 1 ? `${formatTimeToken(minutes, false)}:` : '';
+    const formattedSeconds = formatTimeToken(seconds, !!minutes);
+
+    return `${formattedHours}${formattedMinutes}${formattedSeconds}`;
   };
 
   const formatTimeToken = (token, shouldPad) => {
