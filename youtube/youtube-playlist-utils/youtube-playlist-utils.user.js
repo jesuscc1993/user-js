@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2024.08.27.22.02
+// @version        2024.08.28.21.26
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -56,8 +56,10 @@
 
     const formattedHours =
       minUnit > 2 ? `${formatTimeToken(hours, false)}:` : '';
+
     const formattedMinutes =
-      minUnit > 1 ? `${formatTimeToken(minutes, false)}:` : '';
+      minUnit > 1 ? `${formatTimeToken(minutes, !!hours)}:` : '';
+
     const formattedSeconds = formatTimeToken(seconds, !!minutes);
 
     return `${formattedHours}${formattedMinutes}${formattedSeconds}`;
