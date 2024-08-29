@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2024.08.28.21.26
+// @version        2024.08.29.19.43
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -89,7 +89,9 @@
     ${formatLength(
       Math.round(playlistLength.seconds / playlistLength.videos)
     )}`);
-    /* lengthElement.innerHTML = `Length: ${playlistLength}&nbsp;`; */
+    lengthElement.innerText = `Length: ${formatLength(
+      playlistLength.seconds
+    )} `;
   };
 
   // const handleButtonPresence = () => {
@@ -105,11 +107,10 @@
 
   const initialize = () => {
     lengthElement = document.createElement('span');
-    lengthElement.className = 'ytd-playlist-sidebar-primary-info-renderer';
 
     extraStatsElement = document.createElement('span');
     extraStatsElement.className =
-      'extra-stats style-scope ytd-playlist-sidebar-primary-info-renderer';
+      'extra-stats byline-item style-scope ytd-playlist-byline-renderer';
     extraStatsElement.appendChild(lengthElement);
 
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
