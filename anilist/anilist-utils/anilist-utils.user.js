@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2024.04.18.23.06
+// @version        2024.09.17.19.09
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -17,6 +17,8 @@
   'use strict';
 
   const generateSearchLinks = () => {
+    const mediaType = getMediaType();
+
     const youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
     bindSearchAnchor(youTubeAnchor, getVideoSearchUrl);
     appendSearchAnchor(searchWrapper, youTubeAnchor, youTubeIconUrl);
@@ -29,11 +31,13 @@
     bindSearchAnchor(torrentAnchor, getTorrentSearchUrl);
     appendSearchAnchor(searchWrapper, torrentAnchor, torrentIconUrl);
 
-    const subsPleaseAnchor = jQuery(
-      `<a title="Search for SubsPlease torrents"></a>`
-    );
-    bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
-    appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
+    if (MediaType.anime === mediaType) {
+      const subsPleaseAnchor = jQuery(
+        `<a title="Search for SubsPlease torrents"></a>`
+      );
+      bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
+      appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
+    }
   };
 
   const addLinkToSearch = () => {
@@ -80,15 +84,17 @@
   };
 
   const getTorrentSearchUrl = () => {
-    return `${nyaaSearch}&c=${
-      getMediaType().id
-    }&q=${videoResolution}+${getEncodedTitle()}`;
+    const mediaType = getMediaType();
+    return `${nyaaSearch}&c=${mediaType.id}&q=${
+      MediaType.anime === mediaType ? `${videoResolution}+` : ``
+    }${getEncodedTitle()}`;
   };
 
   const getSubsPleaseSearchUrl = () => {
-    return `${nyaaSearch}&c=${
-      getMediaType().id
-    }&q=${videoResolution}+SubsPlease+${getEncodedTitle()}`;
+    const mediaType = getMediaType();
+    return `${nyaaSearch}&c=${mediaType.id}&q=${
+      MediaType.anime === mediaType ? `${videoResolution}+SubsPlease+` : ``
+    }${getEncodedTitle()}`;
   };
 
   const getTitle = () => {
@@ -153,8 +159,12 @@
         height: auto;
       }
 
+      .header {
+        min-height: 342px;
+      }
+
       .sidebar:not([style*="margin-top: 0px;"]) {
-        margin-top: 224px !important;
+        margin-top: 80px !important;
       }
     </style>
   `;
