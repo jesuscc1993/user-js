@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2024.09.17.19.09
+// @version        2024.09.17.19.11
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -159,8 +159,8 @@
         height: auto;
       }
 
-      .header {
-        min-height: 342px;
+      .header .description {
+        min-height: 240px;
       }
 
       .sidebar:not([style*="margin-top: 0px;"]) {
