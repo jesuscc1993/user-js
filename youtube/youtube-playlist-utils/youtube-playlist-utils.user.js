@@ -127,5 +127,20 @@
     // handleButtonPresence();
   };
 
+  /* console utils */
+  unsafeWindow.deleteWatched = () => {
+    const interval = setInterval(() => {
+      let element =
+        document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(4)'
+        ) ||
+        document.querySelector(
+          'ytd-playlist-video-renderer:has(.ytd-thumbnail-overlay-resume-playback-renderer) ytd-menu-renderer button'
+        );
+
+      element ? element.click() : clearInterval(interval);
+    }, 250);
+  };
+
   initialize();
 })();
