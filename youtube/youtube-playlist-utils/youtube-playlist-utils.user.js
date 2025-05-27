@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.05.23.17.17
+// @version        2025.05.27.21.56
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -14,7 +14,11 @@
 
   const INTERACTION_INTERVAL = 250;
 
-  let lengthElement, extraStatsElement /*, buttonElement */;
+  let intervalId;
+
+  let lengthElement;
+  let extraStatsElement;
+  // let buttonElement;
 
   // const shouldRender = () => {
   //   return (
@@ -126,21 +130,8 @@
   };
 
   /* console utils */
-  unsafeWindow.deleteWatched = () => {
-    const interval = setInterval(() => {
-      let element =
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(4)'
-        ) ||
-        document.querySelector(
-          'ytd-playlist-video-renderer:has(.ytd-thumbnail-overlay-resume-playback-renderer) ytd-menu-renderer button'
-        );
-
-      element ? element.click() : clearInterval(interval);
-    }, INTERACTION_INTERVAL);
-  };
   unsafeWindow.deleteUnavailable = () => {
-    const interval = setInterval(() => {
+    intervalId = setInterval(() => {
       let element =
         document.querySelector(
           'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)'
@@ -149,7 +140,46 @@
           'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button'
         );
 
-      element ? element.click() : clearInterval(interval);
+      element ? element.click() : clearInterval(intervalId);
+    }, INTERACTION_INTERVAL);
+  };
+
+  unsafeWindow.deleteWatched = () => {
+    intervalId = setInterval(() => {
+      let element =
+        document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
+        ) ||
+        document.querySelector(
+          'ytd-playlist-video-renderer:has(.ytd-thumbnail-overlay-resume-playback-renderer) ytd-menu-renderer button'
+        );
+
+      element ? element.click() : clearInterval(intervalId);
+    }, INTERACTION_INTERVAL);
+  };
+
+  unsafeWindow.deleteByText = (text) => {
+    const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
+    const matches = Array.from(renderers).filter((el) => {
+      const title = el.querySelector('#video-title');
+      return title?.innerText.toLowerCase().includes(text.toLowerCase());
+    });
+
+    let count = matches.length;
+    intervalId = setInterval(() => {
+      const dropdownItem = document.querySelector(
+        'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
+      );
+      if (dropdownItem) {
+        dropdownItem.click();
+        return;
+      }
+
+      matches[matches.length - count]
+        .querySelector('ytd-menu-renderer button')
+        .click();
+
+      count <= 1 ? clearInterval(intervalId) : count--;
     }, INTERACTION_INTERVAL);
   };
 
