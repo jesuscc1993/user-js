@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2024.09.17.19.11
+// @version        2025.06.13.18.41
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // @icon           https://anilist.co/favicon.ico
-// @match          https://anilist.co/anime/*
-// @match          https://anilist.co/manga/*
+// @match          https://anilist.co/*
 // ==/UserScript==
 
 /* globals jQuery */
@@ -105,13 +104,28 @@
   };
 
   const getEncodedTitle = () => {
-    return encodeURI(getTitle());
+    return encodeURI(getTitle()).replace(/%20/g, '+');
   };
 
   const getMediaType = () => {
     return location.href.indexOf('https://anilist.co/anime') > -1
       ? MediaType.anime
       : MediaType.manga;
+  };
+
+  /* console utils */
+  unsafeWindow.clearActivity = () => {
+    const interval = setInterval(() => {
+      let element =
+        document.querySelector(
+          '.el-message-box__wrapper:not([style*="display: none;"]) .el-button--primary'
+        ) ||
+        document.querySelector(
+          '.activity-entry .el-dropdown-menu div.el-dropdown-menu__item'
+        );
+
+      element ? element.click() : clearInterval(interval);
+    }, 333);
   };
 
   const initialize = () => {
@@ -165,6 +179,10 @@
 
       .sidebar:not([style*="margin-top: 0px;"]) {
         margin-top: 80px !important;
+      }
+
+      .actions {
+        grid-gap: 24px !important;
       }
     </style>
   `;
