@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.05.27.21.56
+// @version        2025.07.03.18.32
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -117,6 +117,8 @@
 
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
 
+    bindForwardButton();
+
     // buttonElement = jQuery(`
     //   <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer" style="margin-top: 24px;">
     //     Calculate Extra Stats
@@ -127,6 +129,20 @@
     // const observer = new MutationObserver(handleButtonPresence);
     // observer.observe(document.body, { childList: true, subtree: true });
     // handleButtonPresence();
+  };
+
+  const bindForwardButton = () => {
+    window.addEventListener(
+      'mouseup',
+      (e) => {
+        if (e.button === 4) {
+          document.querySelector('.ytp-next-button')?.click();
+        } else {
+          history.forward();
+        }
+      },
+      true
+    );
   };
 
   /* console utils */
