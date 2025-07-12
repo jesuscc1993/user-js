@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.07.03.18.32
+// @version        2025.07.13.00.24
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -164,7 +164,10 @@
     intervalId = setInterval(() => {
       let element =
         document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
+          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(4)'
+        ) ||
+        document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)'
         ) ||
         document.querySelector(
           'ytd-playlist-video-renderer:has(.ytd-thumbnail-overlay-resume-playback-renderer) ytd-menu-renderer button'
