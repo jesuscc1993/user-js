@@ -1,6 +1,6 @@
 # UserJS
 
-To install, view the raw files.  
+To install, view the raw files.
 Requires a userscript loader extension:
 
 - [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (for Chrome)
@@ -11,6 +11,7 @@ Requires a userscript loader extension:
 
 - [anilist/anilist-utils](anilist/anilist-utils)
 - [discord/discord-utils](discord/discord-utils)
+- [github/always-ignore-whitespaces](github/always-ignore-whitespaces)
 - [global/global-image-zoomer](global/global-image-zoomer)
 - [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
 - [nakama.social/nakama-utils](nakama.social/nakama-utils)
