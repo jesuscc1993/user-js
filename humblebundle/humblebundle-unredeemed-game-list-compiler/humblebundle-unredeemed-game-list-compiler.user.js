@@ -52,6 +52,7 @@
         <head>
           <title>Unredeemed HumbleBundle Games List</title>
           <link href="https://cdn.humblebundle.com/static/hashed/46cf2ed85a0641bfdc052121786440c70da77d75.png" rel="icon" />
+          <meta name="color-scheme" content="dark" />
           <style>
             ul {
               list-style: none;
