@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           HumbleBundle - Unredeemed Game List Compiler
 // @description    Compiles a list of the unredeemed games
-// @version        2024.07.22.19.42
+// @version        2025.09.07.21.34
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -15,6 +15,9 @@
 (() => {
   'use strict';
 
+  const CHOICE_TEXT = 'Humble Choice';
+  const YEAR_PATTERN = /\b\d{4}\b/;
+
   let games;
 
   const compileGamesList = () => {
@@ -27,28 +30,11 @@
   };
 
   const processPage = () => {
-    const names = jQuery('.game-name h4')
-      .get()
-      .map((e) => e.textContent);
-    names.sort();
-    names.forEach((name) => {
-      const link = name.includes('Humble Choice')
-        ? name
-            .toLowerCase()
-            .replace(
-              /(.*?)\s(.*?)\s.*/,
-              `https://www.humblebundle.com/membership/$1-$2`
-            )
-        : `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
-
-      games.push(`
-        <li>
-          <a href="${link}" target="_blank">
-            ${name}
-          </a>
-        </li>
-      `);
-    });
+    games = games.concat(
+      jQuery('.game-name h4')
+        .get()
+        .map((e) => e.textContent)
+    );
 
     const nextPage = jQuery('.jump-to-page.current').next();
     if (nextPage.length) {
@@ -77,7 +63,7 @@
 
         <body>
           <ul>
-            ${games.join('')}
+            ${sortGames(games).map(getGameHtml).join('')}
           </ul>
 
           <p>
@@ -87,6 +73,48 @@
       </html>
     `;
     downloadFile(html, 'unredeemed-humblebundle-games-list.html', 'text/plain');
+  };
+
+  const sortGames = (games) => {
+    return games.sort((a, b) => {
+      const aContainsChoice = a.includes(CHOICE_TEXT);
+      const bContainsChoice = b.includes(CHOICE_TEXT);
+
+      if (aContainsChoice && !bContainsChoice) {
+        return -1;
+      } else if (!aContainsChoice && bContainsChoice) {
+        return 1;
+      } else {
+        const yearA = parseInt(a.match(YEAR_PATTERN));
+        const yearB = parseInt(b.match(YEAR_PATTERN));
+        if (!isNaN(yearA) && !isNaN(yearB)) {
+          if (yearA !== yearB) {
+            return yearB - yearA;
+          } else {
+            return a.localeCompare(b);
+          }
+        }
+      }
+    });
+  };
+
+  const getGameHtml = (name) => {
+    const link = name.includes(CHOICE_TEXT)
+      ? name
+          .toLowerCase()
+          .replace(
+            /(.*?)\s(.*?)\s.*/,
+            `https://www.humblebundle.com/membership/$1-$2`
+          )
+      : `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
+
+    return `
+        <li>
+          <a href="${link}" target="_blank">
+            ${name}
+          </a>
+        </li>
+      `;
   };
 
   const downloadFile = (content, fileName, type) => {
