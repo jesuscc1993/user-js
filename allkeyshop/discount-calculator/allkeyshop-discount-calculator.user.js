@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2025.09.09.17.32
+// @version        2025.09.09.17.36
 // @author         MetalTxus
 
 // @icon           https://www.allkeyshop.com/blog/wp-content/themes/aks-theme/assets/image/favicon-32x32.png
@@ -26,11 +26,14 @@ const SORT_BY_DISCOUNT = true;
 
     const discount = ((officialPrice - bestPrice) / officialPrice) * 100;
     if (discount > 0) {
-      $bestPrice.append(
-        `<span class="metacritic-button-green">&nbsp;-${Math.round(
-          discount
-        )}%&nbsp;</span>`
-      );
+      const discountColor =
+        discount > 66 ? 'green' : discount > 33 ? 'yellow' : 'red';
+
+      $bestPrice.append(`
+        <span class="metacritic-button-${discountColor}">
+          &nbsp;-${Math.round(discount)}%&nbsp;
+        </span>
+      `);
     }
 
     rowsWithDiscount.push({ discount, $row: jQuery(e) });
