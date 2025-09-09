@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2025.09.09.17.14
+// @version        2025.09.09.17.16
 // @author         MetalTxus
 
-// @require        https://code.jquery.com/jquery-3.6.0.min.js
 // @match          https://www.allkeyshop.com/blog/list/*
 // ==/UserScript==
 
