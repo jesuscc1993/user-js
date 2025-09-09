@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2025.09.09.17.36
+// @version        2025.09.09.23.39
 // @author         MetalTxus
 
 // @icon           https://www.allkeyshop.com/blog/wp-content/themes/aks-theme/assets/image/favicon-32x32.png
@@ -25,22 +25,31 @@ const SORT_BY_DISCOUNT = true;
     const bestPrice = parseFloat($bestPrice.text());
 
     const discount = ((officialPrice - bestPrice) / officialPrice) * 100;
-    if (discount > 0) {
+    const roundedDiscount = Math.round(discount);
+    if (roundedDiscount > 0) {
       const discountColor =
         discount > 66 ? 'green' : discount > 33 ? 'yellow' : 'red';
 
       $bestPrice.append(`
         <span class="metacritic-button-${discountColor}">
-          &nbsp;-${Math.round(discount)}%&nbsp;
+          &nbsp;-${roundedDiscount}%&nbsp;
         </span>
       `);
     }
 
-    rowsWithDiscount.push({ discount, $row: jQuery(e) });
+    rowsWithDiscount.push({
+      bestPrice,
+      discount: roundedDiscount > 0 ? discount : undefined,
+      $row: jQuery(e),
+    });
   });
 
   if (SORT_BY_DISCOUNT) {
-    rowsWithDiscount.sort((a, b) => (a.discount < b.discount ? 1 : -1));
+    rowsWithDiscount.sort((a, b) => {
+      if (a.discount && b.discount) return b.discount - a.discount;
+      if (!a.discount && !b.discount) return a.bestPrice - b.bestPrice;
+      return a.discount ? -1 : 1;
+    });
 
     const $container = jQuery('.akswl-list > tbody');
     jQuery.each(rowsWithDiscount, (_, { $row }) => $container.append($row));
