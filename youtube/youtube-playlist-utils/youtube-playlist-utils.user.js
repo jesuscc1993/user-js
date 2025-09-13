@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.07.13.00.24
+// @version        2025.09.14.01.25
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -136,9 +136,8 @@
       'mouseup',
       (e) => {
         if (e.button === 4) {
-          document.querySelector('.ytp-next-button')?.click();
-        } else {
-          history.forward();
+          const nextBtn = document.querySelector('.ytp-next-button');
+          nextBtn ? nextBtn.click() : history.forward();
         }
       },
       true
