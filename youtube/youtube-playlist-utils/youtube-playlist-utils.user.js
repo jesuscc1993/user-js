@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.09.14.01.25
+// @version        2025.09.22.18.19
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -32,7 +32,7 @@
     let seconds = 0;
 
     const badges = document.querySelectorAll(
-      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .badge-shape-wiz__text'
+      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .yt-badge-shape__text'
     );
 
     badges.forEach((el) => {
