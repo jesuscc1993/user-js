@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.09.23.12.04
+// @version        2025.09.24.12.20
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -203,18 +203,24 @@
 
   unsafeWindow.saveToWatchLater = () => {
     const videos = document.querySelectorAll(
-      '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))'
+      '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))'
     );
 
     let i = 0;
     let intervalId = setInterval(() => {
-      let element =
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)'
-        ) ||
-        (i < videos.length
-          ? videos[i++].querySelector('.yt-lockup-view-model__metadata button')
-          : null);
+      let element = document.querySelector(
+        'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)'
+      );
+
+      while (!element && i < videos.length) {
+        const button = videos[i++].querySelector(
+          '.yt-lockup-view-model__metadata button'
+        );
+        if (button) {
+          element = button;
+          break;
+        }
+      }
 
       element ? element.click() : clearInterval(intervalId);
     }, INTERACTION_INTERVAL);
