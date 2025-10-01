@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2025.09.09.23.43
+// @version        2025.10.01.22.45
 // @author         MetalTxus
 
 // @icon           https://www.allkeyshop.com/blog/wp-content/themes/aks-theme/assets/image/favicon-32x32.png
@@ -21,8 +21,8 @@ const SORT_BY_DISCOUNT = true;
     const $officialPrice = jQuery(e).find('.game-best-official-price');
     const $bestPrice = jQuery(e).find('.game-best-price');
 
-    const officialPrice = parseFloat($officialPrice.text());
-    const bestPrice = parseFloat($bestPrice.text());
+    const officialPrice = parseFloat($officialPrice.text()) || 999;
+    const bestPrice = parseFloat($bestPrice.text()) || 999;
 
     const discount = ((officialPrice - bestPrice) / officialPrice) * 100;
     const roundedDiscount = Math.round(discount);
