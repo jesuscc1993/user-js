@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.09.24.12.20
+// @version        2025.10.05.11.24
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -12,7 +12,7 @@
 (() => {
   'use strict';
 
-  const INTERACTION_INTERVAL = 250;
+  const INTERACTION_INTERVAL = 100;
 
   let intervalId;
 
