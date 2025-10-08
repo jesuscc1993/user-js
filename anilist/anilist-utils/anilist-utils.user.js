@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.06.13.18.41
+// @version        2025.10.08.21.05
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -15,34 +15,35 @@
 (() => {
   'use strict';
 
-  const generateSearchLinks = () => {
-    const mediaType = getMediaType();
+  let youTubeAnchor;
+  let imagesAnchor;
+  let torrentAnchor;
+  let subsPleaseAnchor;
 
-    const youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
+  const generateSearchLinks = () => {
+    youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
     bindSearchAnchor(youTubeAnchor, getVideoSearchUrl);
     appendSearchAnchor(searchWrapper, youTubeAnchor, youTubeIconUrl);
 
-    const imagesAnchor = jQuery(`<a title="Search for images"></a>`);
+    imagesAnchor = jQuery(`<a title="Search for images"></a>`);
     bindSearchAnchor(imagesAnchor, getImageSearchUrl);
     appendSearchAnchor(searchWrapper, imagesAnchor, imagesIconUrl);
 
-    const torrentAnchor = jQuery(`<a title="Search for torrents"></a>`);
+    torrentAnchor = jQuery(`<a title="Search for torrents"></a>`);
     bindSearchAnchor(torrentAnchor, getTorrentSearchUrl);
     appendSearchAnchor(searchWrapper, torrentAnchor, torrentIconUrl);
 
-    if (MediaType.anime === mediaType) {
-      const subsPleaseAnchor = jQuery(
-        `<a title="Search for SubsPlease torrents"></a>`
-      );
-      bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
-      appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
-    }
+    subsPleaseAnchor = jQuery(`<a title="Search for SubsPlease torrents"></a>`);
+    bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
+    appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
   };
 
   const addLinkToSearch = () => {
     const container = jQuery('.cover-wrap-inner');
     if (container.length && !container.find('.custom-search-wrapper').length) {
       container.append(searchWrapper);
+
+      subsPleaseAnchor.toggle(getMediaType() === MediaType.anime);
     }
   };
 
