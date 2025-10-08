@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.10.08.21.05
+// @version        2025.10.08.21.09
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -15,35 +15,32 @@
 (() => {
   'use strict';
 
-  let youTubeAnchor;
-  let imagesAnchor;
-  let torrentAnchor;
-  let subsPleaseAnchor;
-
   const generateSearchLinks = () => {
-    youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
-    bindSearchAnchor(youTubeAnchor, getVideoSearchUrl);
-    appendSearchAnchor(searchWrapper, youTubeAnchor, youTubeIconUrl);
+    $imagesAnchor = jQuery(`<a title="Search for images"></a>`);
+    bindSearchAnchor($imagesAnchor, getImageSearchUrl);
+    appendSearchAnchor($searchWrapper, $imagesAnchor, imagesIconUrl);
 
-    imagesAnchor = jQuery(`<a title="Search for images"></a>`);
-    bindSearchAnchor(imagesAnchor, getImageSearchUrl);
-    appendSearchAnchor(searchWrapper, imagesAnchor, imagesIconUrl);
+    $youTubeAnchor = jQuery(`<a title="Search for videos"></a>`);
+    bindSearchAnchor($youTubeAnchor, getVideoSearchUrl);
+    appendSearchAnchor($searchWrapper, $youTubeAnchor, youTubeIconUrl);
 
-    torrentAnchor = jQuery(`<a title="Search for torrents"></a>`);
-    bindSearchAnchor(torrentAnchor, getTorrentSearchUrl);
-    appendSearchAnchor(searchWrapper, torrentAnchor, torrentIconUrl);
+    $torrentAnchor = jQuery(`<a title="Search for torrents"></a>`);
+    bindSearchAnchor($torrentAnchor, getTorrentSearchUrl);
+    appendSearchAnchor($searchWrapper, $torrentAnchor, torrentIconUrl);
 
-    subsPleaseAnchor = jQuery(`<a title="Search for SubsPlease torrents"></a>`);
-    bindSearchAnchor(subsPleaseAnchor, getSubsPleaseSearchUrl);
-    appendSearchAnchor(searchWrapper, subsPleaseAnchor, subsPleaseIconUrl);
+    $subsPleaseAnchor = jQuery(
+      `<a title="Search for SubsPlease torrents"></a>`
+    );
+    bindSearchAnchor($subsPleaseAnchor, getSubsPleaseSearchUrl);
+    appendSearchAnchor($searchWrapper, $subsPleaseAnchor, subsPleaseIconUrl);
   };
 
   const addLinkToSearch = () => {
     const container = jQuery('.cover-wrap-inner');
     if (container.length && !container.find('.custom-search-wrapper').length) {
-      container.append(searchWrapper);
+      container.append($searchWrapper);
 
-      subsPleaseAnchor.toggle(getMediaType() === MediaType.anime);
+      $subsPleaseAnchor.toggle(getMediaType() === MediaType.anime);
     }
   };
 
@@ -138,7 +135,12 @@
     setInterval(addLinkToSearch, 1000);
   };
 
-  const searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');
+  const $searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');
+
+  let $imagesAnchor;
+  let $subsPleaseAnchor;
+  let $torrentAnchor;
+  let $youTubeAnchor;
 
   const videoResolution = '720';
 
