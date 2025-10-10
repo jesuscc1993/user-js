@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           HumbleBundle - Unredeemed Game List Compiler
 // @description    Compiles a list of the unredeemed games
-// @version        2025.10.10.18.55
+// @version        2025.10.10.19.19
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -109,7 +109,9 @@
             /(.*?)\s(.*?)\s.*/,
             `https://www.humblebundle.com/membership/$1-$2`
           )
-      : `https://store.steampowered.com/search/?term=${encodeURI(name)}`;
+      : `https://store.steampowered.com/search/?term=${encodeURI(
+          name.replace(/\?/g, '')
+        )}`;
 
     return `
         <li>
