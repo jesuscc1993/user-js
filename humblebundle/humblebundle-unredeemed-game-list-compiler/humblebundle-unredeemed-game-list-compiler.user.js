@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           HumbleBundle - Unredeemed Game List Compiler
 // @description    Compiles a list of the unredeemed games
-// @version        2025.09.07.21.34
+// @version        2025.10.10.18.55
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -85,7 +85,7 @@
         return -1;
       } else if (!aContainsChoice && bContainsChoice) {
         return 1;
-      } else {
+      } else if (aContainsChoice && bContainsChoice) {
         const yearA = parseInt(a.match(YEAR_PATTERN));
         const yearB = parseInt(b.match(YEAR_PATTERN));
         if (!isNaN(yearA) && !isNaN(yearB)) {
@@ -96,6 +96,8 @@
           }
         }
       }
+
+      return a.localeCompare(b);
     });
   };
 
