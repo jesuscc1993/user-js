@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.10.08.21.09
+// @version        2025.10.12.21.58
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -33,6 +33,10 @@
     );
     bindSearchAnchor($subsPleaseAnchor, getSubsPleaseSearchUrl);
     appendSearchAnchor($searchWrapper, $subsPleaseAnchor, subsPleaseIconUrl);
+
+    $batotoAnchor = jQuery(`<a title='Search for Batoto manga'></a>`);
+    bindSearchAnchor($batotoAnchor, getBatotoSearchUrl);
+    appendSearchAnchor($searchWrapper, $batotoAnchor, batotoIconUrl);
   };
 
   const addLinkToSearch = () => {
@@ -41,6 +45,7 @@
       container.append($searchWrapper);
 
       $subsPleaseAnchor.toggle(getMediaType() === MediaType.anime);
+      $batotoAnchor.toggle(getMediaType() === MediaType.manga);
     }
   };
 
@@ -78,6 +83,10 @@
 
   const getImageSearchUrl = () => {
     return `${googleSearch}${getEncodedTitle()}+${getMediaType().label}`;
+  };
+
+  const getBatotoSearchUrl = () => {
+    return `${batotoSearch}${getEncodedTitle()}`;
   };
 
   const getTorrentSearchUrl = () => {
@@ -141,13 +150,16 @@
   let $subsPleaseAnchor;
   let $torrentAnchor;
   let $youTubeAnchor;
+  let $batotoAnchor;
 
   const videoResolution = '720';
 
+  const batotoSearch = `https://bato.to/search?word=`;
   const googleSearch = `https://www.google.es/search?udm=2&q=`;
   const nyaaSearch = `https://nyaa.si/?f=0&s=seeders&o=desc`;
   const youTubeSearch = `https://www.youtube.com/results?search_query=`;
 
+  const batotoIconUrl = 'https://i.imgur.com/CgWQRO1.png';
   const imagesIconUrl = 'https://i.imgur.com/xeDBHKU.png';
   const subsPleaseIconUrl = 'https://i.imgur.com/21j5OcW.png';
   const torrentIconUrl = 'https://i.imgur.com/y0sSoXk.png';
