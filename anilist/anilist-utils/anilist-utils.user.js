@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.10.12.21.58
+// @version        2025.10.17.19.34
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -78,11 +78,11 @@
   };
 
   const getVideoSearchUrl = () => {
-    return `${youTubeSearch}${getEncodedTitle()}+${getMediaType().label}`;
+    return `${youTubeSearch}${getEncodedTitle()}+${getMediaTypeQuery()}`;
   };
 
   const getImageSearchUrl = () => {
-    return `${googleSearch}${getEncodedTitle()}+${getMediaType().label}`;
+    return `${googleSearch}${getEncodedTitle()}+${getMediaTypeQuery()}`;
   };
 
   const getBatotoSearchUrl = () => {
@@ -118,6 +118,10 @@
     return location.href.indexOf('https://anilist.co/anime') > -1
       ? MediaType.anime
       : MediaType.manga;
+  };
+
+  const getMediaTypeQuery = () => {
+    return getMediaType() === MediaType.anime ? 'anime -manga' : 'manga -anime';
   };
 
   /* console utils */
