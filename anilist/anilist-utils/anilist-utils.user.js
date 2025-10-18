@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.10.17.19.34
+// @version        2025.10.18.20.45
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -111,7 +111,7 @@
   };
 
   const getEncodedTitle = () => {
-    return encodeURI(getTitle()).replace(/%20/g, '+');
+    return encodeURI(getTitle()).replace(/%20/g, '+').replace(/&/g, '%26');
   };
 
   const getMediaType = () => {
