@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.10.05.11.24
+// @version        2025.10.28.18.22
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -183,22 +183,24 @@
       return title?.innerText.toLowerCase().includes(text.toLowerCase());
     });
 
-    let count = matches.length;
-    intervalId = setInterval(() => {
-      const dropdownItem = document.querySelector(
-        'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
-      );
-      if (dropdownItem) {
-        dropdownItem.click();
-        return;
-      }
+    if (matches.length) {
+      let count = matches.length;
+      intervalId = setInterval(() => {
+        const dropdownItem = document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
+        );
+        if (dropdownItem) {
+          dropdownItem.click();
+          return;
+        }
 
-      matches[matches.length - count]
-        .querySelector('ytd-menu-renderer button')
-        .click();
+        matches[matches.length - count]
+          .querySelector('ytd-menu-renderer button')
+          .click();
 
-      count <= 1 ? clearInterval(intervalId) : count--;
-    }, INTERACTION_INTERVAL);
+        count <= 1 ? clearInterval(intervalId) : count--;
+      }, INTERACTION_INTERVAL);
+    }
   };
 
   unsafeWindow.saveToWatchLater = () => {
