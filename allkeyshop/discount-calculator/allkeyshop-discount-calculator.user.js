@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2026.01.26.19.58
+// @version        2026.01.31.19.31
 // @author         MetalTxus
 
 // @icon           https://www.allkeyshop.com/blog/wp-content/themes/aks-theme/assets/image/favicon-32x32.png
@@ -45,7 +45,7 @@ const SORT_BY_DISCOUNT = true;
         </span>
       `);
     } else {
-      $bestPrice.parent().html('');
+      $bestPrice.hide().parent().find('em').remove();
     }
 
     rowsWithDiscount.push({
