@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2025.10.28.18.22
+// @version        2026.03.03.10.55
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -32,7 +32,7 @@
     let seconds = 0;
 
     const badges = document.querySelectorAll(
-      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .badge-shape-wiz__text'
+      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .badge-shape-wiz__text',
     );
 
     badges.forEach((el) => {
@@ -73,7 +73,7 @@
 
   const calculateExtraPlaylistStats = () => {
     const containerElement = document.querySelector(
-      'ytd-playlist-byline-renderer'
+      'ytd-playlist-byline-renderer',
     );
     if (containerElement && !containerElement.querySelector('.extra-stats')) {
       containerElement
@@ -89,10 +89,10 @@
     ${formatLength(playlistLength.seconds)}
   Length on average:
     ${formatLength(
-      Math.round(playlistLength.seconds / playlistLength.videos)
+      Math.round(playlistLength.seconds / playlistLength.videos),
     )}`);
     lengthElement.innerText = `Length: ${formatLength(
-      playlistLength.seconds
+      playlistLength.seconds,
     )} `;
   };
 
@@ -136,11 +136,16 @@
       'mouseup',
       (e) => {
         if (e.button === 4) {
-          const nextBtn = document.querySelector('.ytp-next-button');
-          nextBtn ? nextBtn.click() : history.forward();
+          const currentVideoEl = document.querySelector(
+            'ytd-playlist-panel-video-renderer[selected]',
+          );
+          const nextEl = currentVideoEl
+            ? currentVideoEl?.nextElementSibling?.querySelector('a')
+            : document.querySelector('.ytp-next-button');
+          nextEl ? nextEl.click() : history.forward();
         }
       },
-      true
+      true,
     );
   };
 
@@ -149,10 +154,10 @@
     intervalId = setInterval(() => {
       let element =
         document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)'
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)',
         ) ||
         document.querySelector(
-          'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button'
+          'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
         );
 
       element ? element.click() : clearInterval(intervalId);
@@ -163,13 +168,13 @@
     intervalId = setInterval(() => {
       let element =
         document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(4)'
+          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(4)',
         ) ||
         document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)'
+          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)',
         ) ||
         document.querySelector(
-          'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button'
+          'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button',
         );
 
       element ? element.click() : clearInterval(intervalId);
@@ -187,7 +192,7 @@
       let count = matches.length;
       intervalId = setInterval(() => {
         const dropdownItem = document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)'
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)',
         );
         if (dropdownItem) {
           dropdownItem.click();
@@ -205,18 +210,18 @@
 
   unsafeWindow.saveToWatchLater = () => {
     const videos = document.querySelectorAll(
-      '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))'
+      '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
     );
 
     let i = 0;
     let intervalId = setInterval(() => {
       let element = document.querySelector(
-        'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)'
+        'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)',
       );
 
       while (!element && i < videos.length) {
         const button = videos[i++].querySelector(
-          '.yt-lockup-view-model__metadata button'
+          '.yt-lockup-view-model__metadata button',
         );
         if (button) {
           element = button;
