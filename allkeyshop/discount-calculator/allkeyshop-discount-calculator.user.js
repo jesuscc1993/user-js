@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AllKeyShop - Discount Calculator
 // @description    Calculates discounts against the best official price.
-// @version        2026.01.31.19.31
+// @version        2026.03.24.18.21
 // @author         MetalTxus
 
 // @icon           https://www.allkeyshop.com/blog/wp-content/themes/aks-theme/assets/image/favicon-32x32.png
@@ -17,15 +17,18 @@ const SORT_BY_DISCOUNT = true;
 
   let rowsWithDiscount = [];
 
-  jQuery('.game-row').each((_, e) => {
-    const $officialPrice = jQuery(e).find('.game-best-official-price');
-    const $bestPrice = jQuery(e).find('.game-best-price');
+  const $container = jQuery('.akswl-list > tbody');
 
-    const officialPrice = parseFloat($officialPrice.text());
-    const bestPrice = parseFloat($bestPrice.text());
+  jQuery('.game-row').each((_, e) => {
+    const $row = jQuery(e);
+    const $officialPrice = $row.find('.game-best-official-price');
+    const $bestPrice = $row.find('.game-best-price');
+
+    const officialPrice = parseFloat($officialPrice.text()) || undefined;
+    const bestPrice = parseFloat($bestPrice.text()) || undefined;
 
     const discount =
-      !isNaN(officialPrice) && !isNaN(bestPrice)
+      officialPrice !== undefined && bestPrice !== undefined
         ? ((officialPrice - bestPrice) / officialPrice) * 100
         : 0;
     const roundedDiscount = Math.round(discount);
@@ -50,19 +53,20 @@ const SORT_BY_DISCOUNT = true;
 
     rowsWithDiscount.push({
       bestPrice,
+      officialPrice,
       discount: roundedDiscount > 0 ? discount : undefined,
       $row: jQuery(e),
     });
   });
 
   if (SORT_BY_DISCOUNT) {
-    rowsWithDiscount.sort((a, b) => {
-      if (a.discount && b.discount) return b.discount - a.discount;
-      if (!a.discount && !b.discount) return a.bestPrice - b.bestPrice;
-      return a.discount ? -1 : 1;
-    });
+    rowsWithDiscount.sort(
+      (a, b) =>
+        (!a.officialPrice ? 1 : 0) - (!b.officialPrice ? 1 : 0) ||
+        (b.discount || 0) - (a.discount || 0) ||
+        (a.bestPrice || 0) - (b.bestPrice || 0),
+    );
 
-    const $container = jQuery('.akswl-list > tbody');
     jQuery.each(rowsWithDiscount, (_, { $row }) => $container.append($row));
 
     jQuery('.save-order').prop('disabled', false).click();
