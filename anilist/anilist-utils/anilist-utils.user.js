@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2025.10.18.20.45
+// @version        2026.05.03.21.45
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -29,14 +29,16 @@
     appendSearchAnchor($searchWrapper, $torrentAnchor, torrentIconUrl);
 
     $subsPleaseAnchor = jQuery(
-      `<a title="Search for SubsPlease torrents"></a>`
+      `<a title="Search for SubsPlease torrents"></a>`,
     );
     bindSearchAnchor($subsPleaseAnchor, getSubsPleaseSearchUrl);
     appendSearchAnchor($searchWrapper, $subsPleaseAnchor, subsPleaseIconUrl);
 
-    $batotoAnchor = jQuery(`<a title='Search for Batoto manga'></a>`);
-    bindSearchAnchor($batotoAnchor, getBatotoSearchUrl);
-    appendSearchAnchor($searchWrapper, $batotoAnchor, batotoIconUrl);
+    $weebCentralAnchor = jQuery(
+      `<a title='Search for weeb central manga'></a>`,
+    );
+    bindSearchAnchor($weebCentralAnchor, getWeebCentralSearchUrl);
+    appendSearchAnchor($searchWrapper, $weebCentralAnchor, weebCentralIconUrl);
   };
 
   const addLinkToSearch = () => {
@@ -45,7 +47,7 @@
       container.append($searchWrapper);
 
       $subsPleaseAnchor.toggle(getMediaType() === MediaType.anime);
-      $batotoAnchor.toggle(getMediaType() === MediaType.manga);
+      $weebCentralAnchor.toggle(getMediaType() === MediaType.manga);
     }
   };
 
@@ -85,26 +87,28 @@
     return `${googleSearch}${getEncodedTitle()}+${getMediaTypeQuery()}`;
   };
 
-  const getBatotoSearchUrl = () => {
-    return `${batotoSearch}${getEncodedTitle()}`;
+  const getWeebCentralSearchUrl = () => {
+    return `${weebCentralSearch}${getEncodedTitle()}`;
   };
 
   const getTorrentSearchUrl = () => {
     const mediaType = getMediaType();
-    return `${nyaaSearch}&c=${mediaType.id}&q=${
-      MediaType.anime === mediaType ? `${videoResolution}+` : ``
-    }${getEncodedTitle()}`;
+    return `${nyaaSearch}&c=${mediaType.id}&q=${getEncodedTitle()}`;
   };
 
   const getSubsPleaseSearchUrl = () => {
     const mediaType = getMediaType();
-    return `${nyaaSearch}&c=${mediaType.id}&q=${
-      MediaType.anime === mediaType ? `${videoResolution}+SubsPlease+` : ``
-    }${getEncodedTitle()}`;
+    return `${nyaaSearch}&c=${mediaType.id}&q=${getEncodedTitle()}+SubsPlease`;
   };
 
   const getTitle = () => {
-    return jQuery('h1')
+    const enTitle = jQuery('.data-set')
+      .filter(function () {
+        return jQuery(this).find('.type').text().trim() == 'English';
+      })
+      .find('.value');
+    const title = jQuery('h1');
+    return (enTitle.length ? enTitle : title)
       .text()
       .replace(/\s+/g, ' ')
       .replace(/(^\s+| - |:|!|\s+$)/g, '');
@@ -129,10 +133,10 @@
     const interval = setInterval(() => {
       let element =
         document.querySelector(
-          '.el-message-box__wrapper:not([style*="display: none;"]) .el-button--primary'
+          '.el-message-box__wrapper:not([style*="display: none;"]) .el-button--primary',
         ) ||
         document.querySelector(
-          '.activity-entry .el-dropdown-menu div.el-dropdown-menu__item'
+          '.activity-entry .el-dropdown-menu div.el-dropdown-menu__item',
         );
 
       element ? element.click() : clearInterval(interval);
@@ -154,16 +158,16 @@
   let $subsPleaseAnchor;
   let $torrentAnchor;
   let $youTubeAnchor;
-  let $batotoAnchor;
+  let $weebCentralAnchor;
 
   const videoResolution = '720';
 
-  const batotoSearch = `https://bato.to/search?word=`;
+  const weebCentralSearch = `https://weebcentral.com/search?text=`;
   const googleSearch = `https://www.google.es/search?udm=2&q=`;
   const nyaaSearch = `https://nyaa.si/?f=0&s=seeders&o=desc`;
   const youTubeSearch = `https://www.youtube.com/results?search_query=`;
 
-  const batotoIconUrl = 'https://i.imgur.com/CgWQRO1.png';
+  const weebCentralIconUrl = 'https://i.imgur.com/Eev4skC.png';
   const imagesIconUrl = 'https://i.imgur.com/xeDBHKU.png';
   const subsPleaseIconUrl = 'https://i.imgur.com/21j5OcW.png';
   const torrentIconUrl = 'https://i.imgur.com/y0sSoXk.png';
