@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.03.03.10.55
+// @version        2026.05.29.15.28
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -12,7 +12,7 @@
 (() => {
   'use strict';
 
-  const INTERACTION_INTERVAL = 100;
+  const INTERACTION_INTERVAL = 150;
 
   let intervalId;
 
@@ -181,29 +181,27 @@
     }, INTERACTION_INTERVAL);
   };
 
-  unsafeWindow.deleteByText = (text) => {
+  unsafeWindow.deleteByText = (...texts) => {
     const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
     const matches = Array.from(renderers).filter((el) => {
-      const title = el.querySelector('#video-title');
-      return title?.innerText.toLowerCase().includes(text.toLowerCase());
+      const title = el.querySelector('#video-title')?.innerText.toLowerCase();
+      return texts.some((text) => title?.includes(text.toLowerCase()));
     });
 
     if (matches.length) {
-      let count = matches.length;
+      let index = 0;
+
       intervalId = setInterval(() => {
         const dropdownItem = document.querySelector(
           'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)',
         );
         if (dropdownItem) {
           dropdownItem.click();
+          index >= matches.length - 1 ? clearInterval(intervalId) : index++;
           return;
         }
 
-        matches[matches.length - count]
-          .querySelector('ytd-menu-renderer button')
-          .click();
-
-        count <= 1 ? clearInterval(intervalId) : count--;
+        matches[index].querySelector('ytd-menu-renderer button').click();
       }, INTERACTION_INTERVAL);
     }
   };
