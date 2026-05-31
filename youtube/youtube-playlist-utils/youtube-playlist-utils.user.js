@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.05.29.15.28
+// @version        2026.05.31.19.42
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -151,6 +151,8 @@
 
   /* console utils */
   unsafeWindow.deleteUnavailable = () => {
+    clearInterval(intervalId);
+
     intervalId = setInterval(() => {
       let element =
         document.querySelector(
@@ -165,6 +167,8 @@
   };
 
   unsafeWindow.deleteWatched = () => {
+    clearInterval(intervalId);
+
     intervalId = setInterval(() => {
       let element =
         document.querySelector(
@@ -182,6 +186,8 @@
   };
 
   unsafeWindow.deleteByText = (...texts) => {
+    clearInterval(intervalId);
+
     const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
     const matches = Array.from(renderers).filter((el) => {
       const title = el.querySelector('#video-title')?.innerText.toLowerCase();
@@ -207,6 +213,8 @@
   };
 
   unsafeWindow.saveToWatchLater = () => {
+    clearInterval(intervalId);
+
     const videos = document.querySelectorAll(
       '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
     );
