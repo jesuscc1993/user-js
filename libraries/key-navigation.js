@@ -17,7 +17,7 @@
         ArrowUp: (e) => executeFn(onUpPressed, e),
       }[event.key];
 
-      if (operation) operation(event);
+      executeFn(operation, event);
 
       preventDefault && event.preventDefault();
       stopPropagation && event.stopPropagation();
@@ -53,7 +53,7 @@
         4: (e) => executeFn(onForwardPressed, e),
       }[event.button];
 
-      if (operation) operation(event);
+      executeFn(operation, event);
 
       preventDefault && event.preventDefault();
       stopPropagation && event.stopPropagation();
