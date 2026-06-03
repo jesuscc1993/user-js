@@ -9,7 +9,7 @@
     preventDefault,
     stopPropagation,
   }) => {
-    document.addEventListener('keydown', (event) => {
+    const handler = (event) => {
       const operation = {
         ArrowDown: (e) => executeFn(onDownPressed, e),
         ArrowLeft: (e) => executeFn(onLeftPressed, e),
@@ -21,7 +21,10 @@
 
       preventDefault && event.preventDefault();
       stopPropagation && event.stopPropagation();
-    });
+    };
+
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
   };
 
   const setUpAnchorNavigation = (selectorsMap) => {
@@ -30,12 +33,22 @@
     const rightHref = getAnchorHref(selectorsMap.right);
     const upHref = getAnchorHref(selectorsMap.up);
 
-    setUpKeyNavigation({
+    return setUpKeyNavigation({
       onDownPressed: generateNavigationEvent(downHref),
       onLeftPressed: generateNavigationEvent(leftHref),
       onRightPressed: generateNavigationEvent(rightHref),
       onUpPressed: generateNavigationEvent(upHref),
     });
+  };
+
+  const setUpMouseNavigation = ({ onForwardPressed, onBackwardPressed }) => {
+    const handler = (e) => {
+      if (e.button === 3) executeFn(onBackwardPressed, e);
+      if (e.button === 4) executeFn(onForwardPressed, e);
+    };
+
+    window.addEventListener('mouseup', handler, true);
+    return () => window.removeEventListener('mouseup', handler, true);
   };
 
   const getElement = (selector) => {
@@ -56,4 +69,5 @@
 
   window.setUpAnchorNavigation = setUpAnchorNavigation;
   window.setUpKeyNavigation = setUpKeyNavigation;
+  window.setUpMouseNavigation = setUpMouseNavigation;
 })();
