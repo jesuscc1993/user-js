@@ -41,10 +41,22 @@
     });
   };
 
-  const setUpMouseNavigation = ({ onForwardPressed, onBackwardPressed }) => {
-    const handler = (e) => {
-      if (e.button === 3) executeFn(onBackwardPressed, e);
-      if (e.button === 4) executeFn(onForwardPressed, e);
+  const setUpMouseNavigation = ({
+    onForwardPressed,
+    onBackwardPressed,
+    preventDefault,
+    stopPropagation,
+  }) => {
+    const handler = (event) => {
+      const operation = {
+        3: (e) => executeFn(onBackwardPressed, e),
+        4: (e) => executeFn(onForwardPressed, e),
+      }[event.button];
+
+      if (operation) operation(event);
+
+      preventDefault && event.preventDefault();
+      stopPropagation && event.stopPropagation();
     };
 
     window.addEventListener('mouseup', handler, true);
