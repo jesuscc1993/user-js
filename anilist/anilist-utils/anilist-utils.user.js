@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2026.05.03.21.45
+// @version        2026.06.07.12.31
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
+
+// @grant          GM_registerMenuCommand
 
 // @require        https://code.jquery.com/jquery-3.2.1.min.js
 // @icon           https://anilist.co/favicon.ico
 // @match          https://anilist.co/*
+
 // ==/UserScript==
 
 /* globals jQuery */
@@ -128,8 +131,7 @@
     return getMediaType() === MediaType.anime ? 'anime -manga' : 'manga -anime';
   };
 
-  /* console utils */
-  unsafeWindow.clearActivity = () => {
+  const clearActivity = () => {
     const interval = setInterval(() => {
       let element =
         document.querySelector(
@@ -150,6 +152,10 @@
     setTimeout(addLinkToSearch, 150);
 
     setInterval(addLinkToSearch, 1000);
+
+    unsafeWindow.clearActivity = clearActivity;
+
+    GM_registerMenuCommand('Clear activity', clearActivity);
   };
 
   const $searchWrapper = jQuery('<div class="custom-search-wrapper"></div>');

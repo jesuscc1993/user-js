@@ -1,12 +1,15 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.06.07.11.20
+// @version        2026.06.07.12.31
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
+// @grant          GM_registerMenuCommand
+
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
+
 // ==/UserScript==
 
 (() => {
@@ -16,23 +19,14 @@
 
   let intervalId;
 
-  let lengthElement;
+  let durationElement;
   let extraStatsElement;
-  // let buttonElement;
-
-  // const shouldRender = () => {
-  //   return (
-  //     location.href.includes('/playlist?list=') &&
-  //     document.querySelectorAll('ytd-thumbnail-overlay-time-status-renderer')
-  //       .length
-  //   );
-  // };
 
   const getPlaylistLength = () => {
     let seconds = 0;
 
     const badges = document.querySelectorAll(
-      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .badge-shape-wiz__text',
+      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .ytBadgeShapeText',
     );
 
     badges.forEach((el) => {
@@ -91,66 +85,12 @@
     ${formatLength(
       Math.round(playlistLength.seconds / playlistLength.videos),
     )}`);
-    lengthElement.innerText = `Length: ${formatLength(
+    durationElement.innerText = `Duration: ${formatLength(
       playlistLength.seconds,
     )} `;
   };
 
-  // const handleButtonPresence = () => {
-  //   if (shouldRender()) {
-  //     const buttonContainerElement = jQuery('.ytd-playlist-byline-renderer').first();
-  //     if (buttonContainerElement.length && !buttonContainerElement.find('#stats').before(buttonElement).length) {
-  //       buttonContainerElement.prepend(buttonElement);
-  //     }
-  //   } else {
-  //     buttonElement.remove();
-  //   }
-  // };
-
-  const initialize = () => {
-    lengthElement = document.createElement('span');
-
-    extraStatsElement = document.createElement('span');
-    extraStatsElement.className =
-      'extra-stats byline-item style-scope ytd-playlist-byline-renderer';
-    extraStatsElement.appendChild(lengthElement);
-
-    unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
-
-    bindForwardButton();
-
-    // buttonElement = jQuery(`
-    //   <tp-yt-paper-button class="style-scope ytd-subscribe-button-renderer" style="margin-top: 24px;">
-    //     Calculate Extra Stats
-    //   </tp-yt-paper-button>
-    // `);
-    // buttonElement.click(calculateExtraPlaylistStats);
-
-    // const observer = new MutationObserver(handleButtonPresence);
-    // observer.observe(document.body, { childList: true, subtree: true });
-    // handleButtonPresence();
-  };
-
-  const bindForwardButton = () => {
-    window.addEventListener(
-      'mouseup',
-      (e) => {
-        if (e.button === 4) {
-          const currentVideoEl = document.querySelector(
-            'ytd-playlist-panel-video-renderer[selected]',
-          );
-          const nextEl = currentVideoEl
-            ? currentVideoEl?.nextElementSibling?.querySelector('a')
-            : document.querySelector('.ytp-next-button');
-          nextEl ? nextEl.click() : history.forward();
-        }
-      },
-      true,
-    );
-  };
-
-  /* console utils */
-  unsafeWindow.deleteUnavailable = () => {
+  const deleteUnavailable = () => {
     clearInterval(intervalId);
 
     intervalId = setInterval(() => {
@@ -166,7 +106,7 @@
     }, INTERACTION_INTERVAL);
   };
 
-  unsafeWindow.deleteWatched = () => {
+  const deleteWatched = () => {
     clearInterval(intervalId);
 
     intervalId = setInterval(() => {
@@ -191,7 +131,7 @@
     }, INTERACTION_INTERVAL);
   };
 
-  unsafeWindow.deleteByText = (...texts) => {
+  const deleteByText = (...texts) => {
     clearInterval(intervalId);
 
     const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
@@ -222,7 +162,7 @@
     }
   };
 
-  unsafeWindow.saveToWatchLater = () => {
+  const saveToWatchLater = () => {
     clearInterval(intervalId);
 
     const videos = document.querySelectorAll(
@@ -230,14 +170,14 @@
     );
 
     let i = 0;
-    let intervalId = setInterval(() => {
+    intervalId = setInterval(() => {
       let element = document.querySelector(
         'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)',
       );
 
       while (!element && i < videos.length) {
         const button = videos[i++].querySelector(
-          '.yt-lockup-view-model__metadata button',
+          '.ytLockupMetadataViewModelMenuButton button',
         );
         if (button) {
           element = button;
@@ -247,6 +187,49 @@
 
       element ? element.click() : clearInterval(intervalId);
     }, INTERACTION_INTERVAL);
+  };
+
+  const initialize = () => {
+    durationElement = document.createElement('span');
+
+    extraStatsElement = document.createElement('span');
+    extraStatsElement.className =
+      'extra-stats byline-item style-scope ytd-playlist-byline-renderer';
+    extraStatsElement.appendChild(durationElement);
+
+    unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
+    unsafeWindow.deleteByText = deleteByText;
+    unsafeWindow.deleteUnavailable = deleteUnavailable;
+    unsafeWindow.deleteWatched = deleteWatched;
+    unsafeWindow.saveToWatchLater = saveToWatchLater;
+
+    GM_registerMenuCommand(
+      'Calculate playlist duration',
+      calculateExtraPlaylistStats,
+    );
+    GM_registerMenuCommand('Delete watched videos', deleteWatched);
+    GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
+    GM_registerMenuCommand('Save from grid to Watch Later', saveToWatchLater);
+
+    bindForwardButton();
+  };
+
+  const bindForwardButton = () => {
+    window.addEventListener(
+      'mouseup',
+      (e) => {
+        if (e.button === 4) {
+          const currentVideoEl = document.querySelector(
+            'ytd-playlist-panel-video-renderer[selected]',
+          );
+          const nextEl = currentVideoEl
+            ? currentVideoEl?.nextElementSibling?.querySelector('a')
+            : document.querySelector('.ytp-next-button');
+          nextEl ? nextEl.click() : history.forward();
+        }
+      },
+      true,
+    );
   };
 
   initialize();
