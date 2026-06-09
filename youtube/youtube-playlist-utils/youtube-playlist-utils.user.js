@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.06.01.17.36
+// @version        2026.06.07.11.20
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -178,7 +178,13 @@
           'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)',
         ) ||
         document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(4)) ytd-menu-service-item-renderer:nth-child(2)',
+        ) ||
+        document.querySelector(
           'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button',
+        ) ||
+        document.querySelector(
+          'ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button',
         );
 
       element ? element.click() : clearInterval(intervalId);
@@ -208,7 +214,9 @@
         }
 
         const match = matches[index];
-        unsafeWindow.console.info(`Deleting "${match.querySelector('#video-title')?.innerText}"`)
+        unsafeWindow.console.info(
+          `Deleting "${match.querySelector('#video-title')?.innerText}"`,
+        );
         match.querySelector('ytd-menu-renderer button').click();
       }, INTERACTION_INTERVAL);
     }
