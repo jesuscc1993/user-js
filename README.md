@@ -9,49 +9,17 @@ Requires a userscript loader extension:
 
 # List
 
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/allkeyshop/discount-calculator/allkeyshop-discount-calculator.user.js) [allkeyshop/discount-calculator](allkeyshop/discount-calculator)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/anilist/anilist-utils/anilist-utils.user.js) [anilist/anilist-utils](anilist/anilist-utils)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/discord/discord-utils/discord-utils.user.js) [discord/discord-utils](discord/discord-utils)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/github/always-ignore-whitespaces/always-ignore-whitespaces.user.js) [github/always-ignore-whitespaces](github/always-ignore-whitespaces)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/global/global-image-zoomer/global-image-zoomer.user.js) [global/global-image-zoomer](global/global-image-zoomer)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/humblebundle/humblebundle-unredeemed-game-list-compiler/humblebundle-unredeemed-game-list-compiler.user.js) [humblebundle/humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/nakama.social/nakama-utils/nakama-utils.user.js) [nakama.social/nakama-utils](nakama.social/nakama-utils)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/nyaa.si/nyaa.si-batch-download/nyaa.si-batch-download.user.js) [nyaa.si/nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/opensubtitles/sort-by-downloads/opensubtitles-sort-by-downloads.user.js) [opensubtitles/sort-by-downloads](opensubtitles/sort-by-downloads)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/steamdb/steamdb-big-game-banners/steamdb-big-game-banners.user.js) [steamdb/steamdb-big-game-banners](steamdb/steamdb-big-game-banners)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/webtoon/webtoon-keyboard-navigation/webtoon-keyboard-navigation.user.js) [webtoon/webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)
-
----
-
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/youtube/youtube-playlist-utils/youtube-playlist-utils.user.js) [youtube/youtube-playlist-utils](youtube/youtube-playlist-utils)
-- [![Install Install script](https://img.shields.io/badge/Install-Script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/youtube/youtube-toggle-videos-buttons/youtube-toggle-videos-buttons.user.js) [youtube/youtube-toggle-videos-buttons](youtube/youtube-toggle-videos-buttons)
+| Site                           | Script                                                                                                                             | Install                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [allkeyshop](allkeyshop)       | [discount-calculator](allkeyshop/discount-calculator)                                                                              | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/allkeyshop/discount-calculator/allkeyshop-discount-calculator.user.js)                                                                                                                                                                                                                             |
+| [anilist](anilist)             | [anilist-utils](anilist/anilist-utils)                                                                                             | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/anilist/anilist-utils/anilist-utils.user.js)                                                                                                                                                                                                                                                       |
+| [discord](discord)             | [discord-utils](discord/discord-utils)                                                                                             | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/discord/discord-utils/discord-utils.user.js)                                                                                                                                                                                                                                                       |
+| [github](github)               | [always-ignore-whitespaces](github/always-ignore-whitespaces)                                                                      | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/github/always-ignore-whitespaces/always-ignore-whitespaces.user.js)                                                                                                                                                                                                                                |
+| [global](global)               | [global-image-zoomer](global/global-image-zoomer)                                                                                  | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/global/global-image-zoomer/global-image-zoomer.user.js)                                                                                                                                                                                                                                            |
+| [humblebundle](humblebundle)   | [humblebundle-unredeemed-game-list-compiler](humblebundle/humblebundle-unredeemed-game-list-compiler)                              | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/humblebundle/humblebundle-unredeemed-game-list-compiler/humblebundle-unredeemed-game-list-compiler.user.js)                                                                                                                                                                                        |
+| [nakama.social](nakama.social) | [nakama-utils](nakama.social/nakama-utils)                                                                                         | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/nakama.social/nakama-utils/nakama-utils.user.js)                                                                                                                                                                                                                                                   |
+| [nyaa.si](nyaa.si)             | [nyaa.si-batch-download](nyaa.si/nyaa.si-batch-download)                                                                           | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/nyaa.si/nyaa.si-batch-download/nyaa.si-batch-download.user.js)                                                                                                                                                                                                                                     |
+| [opensubtitles](opensubtitles) | [sort-by-downloads](opensubtitles/sort-by-downloads)                                                                               | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/opensubtitles/sort-by-downloads/opensubtitles-sort-by-downloads.user.js)                                                                                                                                                                                                                           |
+| [steamdb](steamdb)             | [steamdb-big-game-banners](steamdb/steamdb-big-game-banners)                                                                       | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/steamdb/steamdb-big-game-banners/steamdb-big-game-banners.user.js)                                                                                                                                                                                                                                 |
+| [webtoon](webtoon)             | [webtoon-keyboard-navigation](webtoon/webtoon-keyboard-navigation)                                                                 | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/webtoon/webtoon-keyboard-navigation/webtoon-keyboard-navigation.user.js)                                                                                                                                                                                                                           |
+| [youtube](youtube)             | [youtube-playlist-utils](youtube/youtube-playlist-utils)<br>[youtube-toggle-videos-buttons](youtube/youtube-toggle-videos-buttons) | [![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/youtube/youtube-playlist-utils/youtube-playlist-utils.user.js)<br>[![Install script](https://img.shields.io/badge/Install-script-e5a228.svg)](https://raw.githubusercontent.com/jesuscc1993/user-js/refs/heads/master/youtube/youtube-toggle-videos-buttons/youtube-toggle-videos-buttons.user.js) |
