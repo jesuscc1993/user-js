@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.06.07.14.05
+// @version        2026.06.14.23.13
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -136,7 +136,8 @@
 
     const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
     const matches = Array.from(renderers).filter((el) => {
-      const title = el.querySelector('#video-title')?.innerText.toLowerCase();
+      const titleEl = el.querySelector('#video-title');
+      const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
       return texts.some((text) => title?.includes(text.toLowerCase()));
     });
 
