@@ -3,9 +3,12 @@
 To install, view the raw files.
 Requires a userscript loader extension:
 
-- [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (for Chrome)
-- [Tampermonkey](https://addons.opera.com/en/extensions/details/tampermonkey-beta/) (for Opera)
-- [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (for Firefox)
+- Tampermonkey
+  - [![Install for Chrome](https://img.shields.io/badge/Install%20for-Chrome-1772e8.svg)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+  - [![Install for Opera](https://img.shields.io/badge/Install%20for-Opera-e62600.svg)](https://addons.opera.com/extensions/details/tampermonkey-beta/)
+  - [![Install for Firefox](https://img.shields.io/badge/Install%20for-Firefox-ff5b32.svg)](https://addons.mozilla.org/firefox/addon/tampermonkey/)
+- Greasemonkey
+  - [![Install for Firefox](https://img.shields.io/badge/Install%20for-Firefox-ff5b32.svg)](https://addons.mozilla.org/firefox/addon/greasemonkey/)
 
 # List
 
