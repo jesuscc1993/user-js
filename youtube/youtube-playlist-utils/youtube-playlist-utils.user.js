@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.07.01.18.52
+// @version        2026.07.02.19.11
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -90,6 +90,68 @@
     )} `;
   };
 
+  const queryDropdownDeleteItem = () => {
+    return (
+      document.querySelector(
+        'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(4)',
+      ) ||
+      document.querySelector(
+        'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)',
+      ) ||
+      document.querySelector(
+        'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(4)) ytd-menu-service-item-renderer:nth-child(2)',
+      )
+    );
+  };
+
+  const deleteVideoMatches = (matches) => {
+    if (!matches.length) return;
+
+    let index = 0;
+
+    intervalId = setInterval(() => {
+      const dropdownItem = queryDropdownDeleteItem();
+      if (dropdownItem) {
+        dropdownItem.click();
+        index >= matches.length - 1 ? clearInterval(intervalId) : index++;
+        return;
+      }
+
+      const match = matches[index];
+      const matchTitle = match.querySelector('#video-title');
+      console.info(`Deleting "${matchTitle.innerText}" (${matchTitle.href})`);
+      match.querySelector('ytd-menu-renderer button').click();
+    }, INTERACTION_INTERVAL);
+  };
+
+  const deleteWatched = () => {
+    clearInterval(intervalId);
+
+    deleteVideoMatches(
+      Array.from(
+        document.querySelectorAll(
+          'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)), ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
+        ),
+      ),
+    );
+  };
+
+  const deleteByText = (...texts) => {
+    clearInterval(intervalId);
+
+    deleteVideoMatches(
+      Array.from(
+        document.querySelectorAll(
+          'ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer',
+        ),
+      ).filter((el) => {
+        const titleEl = el.querySelector('#video-title');
+        const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
+        return texts.some((text) => title?.includes(text.toLowerCase()));
+      }),
+    );
+  };
+
   const deleteUnavailable = () => {
     clearInterval(intervalId);
 
@@ -104,62 +166,6 @@
 
       element ? element.click() : clearInterval(intervalId);
     }, INTERACTION_INTERVAL);
-  };
-
-  const deleteWatched = () => {
-    clearInterval(intervalId);
-
-    intervalId = setInterval(() => {
-      let element =
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(4)',
-        ) ||
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(7)) ytd-menu-service-item-renderer:nth-child(3)',
-        ) ||
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(4)) ytd-menu-service-item-renderer:nth-child(2)',
-        ) ||
-        document.querySelector(
-          'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button',
-        ) ||
-        document.querySelector(
-          'ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)) ytd-menu-renderer button',
-        );
-
-      element ? element.click() : clearInterval(intervalId);
-    }, INTERACTION_INTERVAL);
-  };
-
-  const deleteByText = (...texts) => {
-    clearInterval(intervalId);
-
-    const renderers = document.querySelectorAll('ytd-playlist-video-renderer');
-    const matches = Array.from(renderers).filter((el) => {
-      const titleEl = el.querySelector('#video-title');
-      const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
-      return texts.some((text) => title?.includes(text.toLowerCase()));
-    });
-
-    if (matches.length) {
-      let index = 0;
-
-      intervalId = setInterval(() => {
-        const dropdownItem = document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(3)',
-        );
-        if (dropdownItem) {
-          dropdownItem.click();
-          index >= matches.length - 1 ? clearInterval(intervalId) : index++;
-          return;
-        }
-
-        const match = matches[index];
-        const matchTitle = match.querySelector('#video-title');
-        console.info(`Deleting "${matchTitle.innerText}" (${matchTitle.href})`);
-        match.querySelector('ytd-menu-renderer button').click();
-      }, INTERACTION_INTERVAL);
-    }
   };
 
   const saveToWatchLater = () => {
