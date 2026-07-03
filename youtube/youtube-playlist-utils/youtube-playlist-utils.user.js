@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.07.02.19.11
+// @version        2026.07.04.01.41
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -104,47 +104,43 @@
     );
   };
 
-  const deleteVideoMatches = (matches) => {
-    if (!matches.length) return;
-
-    let index = 0;
-
+  const deleteVideoMatches = (queryMatch) => {
     intervalId = setInterval(() => {
       const dropdownItem = queryDropdownDeleteItem();
       if (dropdownItem) {
         dropdownItem.click();
-        index >= matches.length - 1 ? clearInterval(intervalId) : index++;
         return;
       }
 
-      const match = matches[index];
+      const match = queryMatch();
+      if (!match) {
+        clearInterval(intervalId);
+        return;
+      }
+
       const matchTitle = match.querySelector('#video-title');
-      console.info(`Deleting "${matchTitle.innerText}" (${matchTitle.href})`);
+      console.info(`Deleting "${matchTitle?.innerText}" (${matchTitle?.href})`);
       match.querySelector('ytd-menu-renderer button').click();
     }, INTERACTION_INTERVAL);
   };
 
   const deleteWatched = () => {
     clearInterval(intervalId);
-
-    deleteVideoMatches(
-      Array.from(
-        document.querySelectorAll(
-          'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)), ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
-        ),
+    deleteVideoMatches(() =>
+      document.querySelector(
+        'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)), ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
       ),
     );
   };
 
   const deleteByText = (...texts) => {
     clearInterval(intervalId);
-
-    deleteVideoMatches(
+    deleteVideoMatches(() =>
       Array.from(
         document.querySelectorAll(
           'ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer',
         ),
-      ).filter((el) => {
+      ).find((el) => {
         const titleEl = el.querySelector('#video-title');
         const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
         return texts.some((text) => title?.includes(text.toLowerCase()));
