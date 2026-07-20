@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name           (GitHub) Always ignore whitespace
 // @description    Always ignore whitespace in GitHub PR diffs
-// @version        2025.10.20.14.49
+// @version        2026.07.20.09.40
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @match          https://github.com/*/pull/*
-// @match          https://github.com/*/pull/*/files*
 // @match          https://github.com/*/compare*
 // @run-at         document-start
 
@@ -16,7 +15,7 @@
 (() => {
   'use strict';
 
-  const prPathnameRegex = /^\/.+\/pull\/\d+\/files/;
+  const prPathnameRegex = /^\/.+\/pull\/\d+\/changes/;
 
   const replaceUrl = () => {
     const url = new URL(window.location.href);
