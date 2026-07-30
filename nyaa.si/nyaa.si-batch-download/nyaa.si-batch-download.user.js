@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           nyaa.si - Batch Download
 // @description    Allows batch download of all displayed results in one single click.
-// @version        2023.03.16.23.02
+// @version        2026.07.30.16.41
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -17,9 +17,17 @@
 (() => {
   'use strict';
 
+  const unitThreshold = 1024;
+
   const delayBetweenDownloads = 150;
 
-  let downloadButton;
+  const downloadButton = jQuery(`
+    <a title="Download all" href class="mt-batch-download">
+      <i class="fa fa-fw fa-magnet"></i
+      ><span class="mt-batch-download-label">Download all</span
+      ><i class="fa fa-fw fa-magnet"></i>
+    </a>
+  `);
   let magnets;
 
   const appendBatchDownloadButton = () => {
@@ -27,14 +35,7 @@
 
     const fileCount = magnets.length;
     if (fileCount) {
-      downloadButton = jQuery(`
-        <a title="Download all" href class="mt-batch-download">
-          <i class="fa fa-fw fa-magnet"></i>
-          <span class="mt-batch-download-label">Download all (${fileCount})</span>
-          <i class="fa fa-fw fa-magnet"></i>
-        </a>
-      `);
-      downloadButton.click((event) => {
+      downloadButton.off('click').on('click', (event) => {
         event.preventDefault();
         downloadAll();
       });
@@ -51,7 +52,34 @@
   const setButtonText = () => {
     downloadButton
       .find(buttonLabelSelector)
-      .text(`Download all (${magnets.length})`);
+      .text(`Download all ${magnets.length} (${getTotalSizeGiB()} GB)`);
+  };
+
+  const getTotalSizeGiB = () => {
+    let totalBytes = 0;
+
+    jQuery('.torrent-list tbody tr td:nth-child(4)').each((_, col) => {
+      const sizeText = jQuery(col).text().trim();
+      const match = sizeText.match(/^([\d.]+)\s*(KiB|MiB|GiB|TiB)$/i);
+
+      if (!match) {
+        return;
+      }
+
+      const value = parseFloat(match[1]);
+      const unit = match[2].toUpperCase();
+
+      const multipliers = {
+        KIB: unitThreshold,
+        MIB: unitThreshold ** 2,
+        GIB: unitThreshold ** 3,
+        TIB: unitThreshold ** 4,
+      };
+
+      totalBytes += value * multipliers[unit];
+    });
+
+    return (totalBytes / unitThreshold ** 3).toFixed(2);
   };
 
   const downloadAll = () => {
@@ -81,7 +109,7 @@
     window.onload = () => {
       new MutationObserver(onMutation).observe(
         document.querySelector('tbody'),
-        { childList: true }
+        { childList: true },
       );
     };
   };
