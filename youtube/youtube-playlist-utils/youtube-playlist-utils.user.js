@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.08.16.00.23
+// @version        2026.08.18.10.44
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -148,6 +148,25 @@
     );
   };
 
+  const deleteDuplicates = () => {
+    clearInterval(intervalId);
+    deleteVideoMatches(() => {
+      const videos = Array.from(
+        document.querySelectorAll(
+          'ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer',
+        ),
+      );
+      const seen = new Set();
+      return videos.find((el) => {
+        const href = el.querySelector('#video-title').href;
+        const id = new URL(href).searchParams.get('v');
+        if (seen.has(id)) return true;
+        seen.add(id);
+        return false;
+      });
+    });
+  };
+
   const deleteUnavailable = () => {
     clearInterval(intervalId);
 
@@ -201,6 +220,7 @@
 
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
     unsafeWindow.deleteByText = deleteByText;
+    unsafeWindow.deleteDuplicates = deleteDuplicates;
     unsafeWindow.deleteUnavailable = deleteUnavailable;
     unsafeWindow.deleteWatched = deleteWatched;
     unsafeWindow.saveToWatchLater = saveToWatchLater;
@@ -210,6 +230,7 @@
       calculateExtraPlaylistStats,
     );
     GM_registerMenuCommand('Delete watched videos', deleteWatched);
+    GM_registerMenuCommand('Delete duplicate videos', deleteDuplicates);
     GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
     GM_registerMenuCommand('Save from grid to Watch Later', saveToWatchLater);
 
