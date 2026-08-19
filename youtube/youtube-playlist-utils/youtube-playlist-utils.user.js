@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.08.18.10.44
+// @version        2026.08.19.13.54
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -15,10 +15,11 @@
 (() => {
   'use strict';
 
-  const INTERACTION_INTERVAL = 250;
+  const INTERACTION_INTERVAL = 125;
 
   let intervalId;
 
+  let hiddenDropdownsStyle;
   let durationElement;
   let extraStatsElement;
 
@@ -90,6 +91,12 @@
     )} `;
   };
 
+  const setDropdownsHidden = (hidden) => {
+    hidden
+      ? document.head.appendChild(hiddenDropdownsStyle)
+      : hiddenDropdownsStyle.remove();
+  };
+
   const queryDropdownDeleteItem = () => {
     return (
       document.querySelector(
@@ -105,6 +112,9 @@
   };
 
   const deleteVideoMatches = (queryMatch) => {
+    clearInterval(intervalId);
+    setDropdownsHidden(true);
+
     intervalId = setInterval(() => {
       const dropdownItem = queryDropdownDeleteItem();
       if (dropdownItem) {
@@ -115,6 +125,7 @@
       const match = queryMatch();
       if (!match) {
         clearInterval(intervalId);
+        setDropdownsHidden(false);
         return;
       }
 
@@ -125,7 +136,6 @@
   };
 
   const deleteWatched = () => {
-    clearInterval(intervalId);
     deleteVideoMatches(() =>
       document.querySelector(
         'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)), ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
@@ -134,7 +144,6 @@
   };
 
   const deleteByText = (...texts) => {
-    clearInterval(intervalId);
     deleteVideoMatches(() =>
       Array.from(
         document.querySelectorAll(
@@ -149,7 +158,6 @@
   };
 
   const deleteDuplicates = () => {
-    clearInterval(intervalId);
     deleteVideoMatches(() => {
       const videos = Array.from(
         document.querySelectorAll(
@@ -169,6 +177,7 @@
 
   const deleteUnavailable = () => {
     clearInterval(intervalId);
+    setDropdownsHidden(true);
 
     intervalId = setInterval(() => {
       let element =
@@ -179,16 +188,23 @@
           'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
         );
 
-      element ? element.click() : clearInterval(intervalId);
+      if (element) {
+        element.click();
+      } else {
+        clearInterval(intervalId);
+        setDropdownsHidden(false);
+      }
     }, INTERACTION_INTERVAL);
   };
 
   const saveToWatchLater = () => {
-    clearInterval(intervalId);
-
     const videos = document.querySelectorAll(
       '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
     );
+    if (!videos.length) return;
+
+    clearInterval(intervalId);
+    setDropdownsHidden(true);
 
     let i = 0;
     intervalId = setInterval(() => {
@@ -206,7 +222,12 @@
         }
       }
 
-      element ? element.click() : clearInterval(intervalId);
+      if (element) {
+        element.click();
+      } else {
+        clearInterval(intervalId);
+        setDropdownsHidden(false);
+      }
     }, INTERACTION_INTERVAL);
   };
 
@@ -217,6 +238,10 @@
     extraStatsElement.className =
       'extra-stats byline-item style-scope ytd-playlist-byline-renderer';
     extraStatsElement.appendChild(durationElement);
+
+    hiddenDropdownsStyle = document.createElement('style');
+    hiddenDropdownsStyle.textContent =
+      'tp-yt-iron-dropdown { opacity: 0 !important; }';
 
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
     unsafeWindow.deleteByText = deleteByText;
