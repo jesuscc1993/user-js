@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.08.19.13.59
+// @version        2026.08.21.11.47
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -131,8 +131,18 @@
       }
 
       const matchTitle = match.querySelector('a#video-title[href]');
-      console.info(`Deleting "${matchTitle?.innerText}" (${matchTitle?.href})`);
-      match.querySelector('ytd-menu-renderer button').click();
+      const deleteButton = match.querySelector('ytd-menu-renderer button');
+      if (!matchTitle || !deleteButton) {
+        clearInterval(intervalId);
+        setDropdownsHidden(false);
+        console.warn(
+          'Aborted deleting matches: unable to locate title or menu button.',
+        );
+        return;
+      }
+
+      console.info(`Deleting "${matchTitle.innerText}" (${matchTitle.href})`);
+      deleteButton.click();
     }, INTERACTION_INTERVAL);
   };
 
