@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.08.21.11.58
+// @version        2026.08.29.10.28
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -147,21 +147,31 @@
     }, INTERACTION_INTERVAL);
   };
 
+  const queryVideo = (subQuery = '') => {
+    return document.querySelector(`
+      ytd-playlist-video-renderer${subQuery},
+      ytd-playlist-panel-video-renderer${subQuery}
+    `);
+  };
+
+  const queryVideos = (subQuery = '') => {
+    return document.querySelectorAll(`
+      ytd-playlist-video-renderer${subQuery},
+      ytd-playlist-panel-video-renderer${subQuery}
+    `);
+  };
+
   const deleteWatched = () => {
     deleteVideoMatches(() =>
-      document.querySelector(
-        'ytd-playlist-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)), ytd-playlist-panel-video-renderer:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
+      queryVideo(
+        ':has(:where(ytw-thumbnail-overlay-resume-playback-renderer, .ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost))',
       ),
     );
   };
 
   const deleteByText = (...texts) => {
     deleteVideoMatches(() =>
-      Array.from(
-        document.querySelectorAll(
-          'ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer',
-        ),
-      ).find((el) => {
+      Array.from(queryVideos()).find((el) => {
         const titleEl = el.querySelector('#video-title');
         const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
         return texts.some((text) => title?.includes(text.toLowerCase()));
@@ -171,11 +181,7 @@
 
   const deleteDuplicates = () => {
     deleteVideoMatches(() => {
-      const videos = Array.from(
-        document.querySelectorAll(
-          'ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer',
-        ),
-      );
+      const videos = Array.from(queryVideos());
       const seen = new Set();
       return videos.find((el) => {
         const href = el.querySelector('#video-title').href;
