@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.08.29.10.28
+// @version        2026.09.08.20.27
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -97,6 +97,12 @@
       : hiddenDropdownsStyle.remove();
   };
 
+  const queryDropdownSaveToWatchLaterItem = () => {
+    return document.querySelector(
+      'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(2)',
+    );
+  };
+
   const queryDropdownDeleteItem = () => {
     return (
       document.querySelector(
@@ -111,12 +117,17 @@
     );
   };
 
-  const deleteVideoMatches = (queryMatch) => {
+  const processVideoMatches = (
+    queryMatch,
+    queryDropdownItem,
+    processMatch,
+    action,
+  ) => {
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
     intervalId = setInterval(() => {
-      const dropdownItem = queryDropdownDeleteItem();
+      const dropdownItem = queryDropdownItem();
       if (dropdownItem) {
         dropdownItem.click();
         return;
@@ -126,25 +137,57 @@
       if (!match) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.info(`Finished deleting matches.`);
+        document
+          .querySelectorAll('.watch-later-saved')
+          .forEach((element) => element.classList.remove('watch-later-saved'));
+        console.info(`Finished ${action} matches.`);
         return;
       }
 
-      const matchTitle = match.querySelector('#video-title');
-      const matchAnchor = match.querySelector('a[href]');
-      const menuButton = match.querySelector('ytd-menu-renderer button');
-      if (!(matchTitle && matchAnchor && menuButton)) {
+      const title = match.querySelector('#video-title');
+      const anchor = match.querySelector('a[href]');
+      const button = match.querySelector('ytd-menu-renderer button');
+      const callbackPayload =
+        title && anchor && button ? { match, title, anchor, button } : null;
+
+      if (!callbackPayload || !processMatch(callbackPayload)) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.warn(
-          'Aborted deleting matches: unable to locate title or menu button.',
-        );
+        console.warn(`Aborted ${action} matches: unable to process video.`);
         return;
       }
-
-      console.info(`Deleting "${matchTitle.innerText}" (${matchAnchor.href})`);
-      menuButton.click();
     }, INTERACTION_INTERVAL);
+  };
+
+  const saveToWatchLaterVideoMatches = (queryMatch) => {
+    processVideoMatches(
+      queryMatch,
+      queryDropdownSaveToWatchLaterItem,
+      (payload) => {
+        console.info(
+          `Saving "${payload.title.innerText}" to Watch Later (${payload.anchor.href})`,
+        );
+        payload.match.classList.add('watch-later-saved');
+        payload.button.click();
+        return true;
+      },
+      'saving',
+    );
+  };
+
+  const deleteVideoMatches = (queryMatch) => {
+    processVideoMatches(
+      queryMatch,
+      queryDropdownDeleteItem,
+      (payload) => {
+        console.info(
+          `Deleting "${payload.title.innerText}" (${payload.anchor.href})`,
+        );
+        payload.button.click();
+        return true;
+      },
+      'deleting',
+    );
   };
 
   const queryVideo = (subQuery = '') => {
@@ -161,6 +204,14 @@
     `);
   };
 
+  const findVideoByText = (videos, texts) => {
+    return Array.from(videos).find((el) => {
+      const titleEl = el.querySelector('#video-title');
+      const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
+      return texts.some((text) => title?.includes(text.toLowerCase()));
+    });
+  };
+
   const deleteWatched = () => {
     deleteVideoMatches(() =>
       queryVideo(
@@ -169,14 +220,14 @@
     );
   };
 
-  const deleteByText = (...texts) => {
-    deleteVideoMatches(() =>
-      Array.from(queryVideos()).find((el) => {
-        const titleEl = el.querySelector('#video-title');
-        const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
-        return texts.some((text) => title?.includes(text.toLowerCase()));
-      }),
+  const saveToWatchLaterByText = (...texts) => {
+    saveToWatchLaterVideoMatches(() =>
+      findVideoByText(queryVideos(':not(.watch-later-saved)'), texts),
     );
+  };
+
+  const deleteByText = (...texts) => {
+    deleteVideoMatches(() => findVideoByText(queryVideos(), texts));
   };
 
   const deleteDuplicates = () => {
@@ -216,7 +267,7 @@
     }, INTERACTION_INTERVAL);
   };
 
-  const saveToWatchLater = () => {
+  const saveGridToWatchLater = () => {
     const videos = document.querySelectorAll(
       '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
     );
@@ -268,7 +319,8 @@
     unsafeWindow.deleteDuplicates = deleteDuplicates;
     unsafeWindow.deleteUnavailable = deleteUnavailable;
     unsafeWindow.deleteWatched = deleteWatched;
-    unsafeWindow.saveToWatchLater = saveToWatchLater;
+    unsafeWindow.saveGridToWatchLater = saveGridToWatchLater;
+    unsafeWindow.saveToWatchLaterByText = saveToWatchLaterByText;
 
     GM_registerMenuCommand(
       'Calculate playlist duration',
@@ -277,7 +329,10 @@
     GM_registerMenuCommand('Delete watched videos', deleteWatched);
     GM_registerMenuCommand('Delete duplicate videos', deleteDuplicates);
     GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
-    GM_registerMenuCommand('Save from grid to Watch Later', saveToWatchLater);
+    GM_registerMenuCommand(
+      'Save from grid to Watch Later',
+      saveGridToWatchLater,
+    );
 
     bindForwardButton();
   };
