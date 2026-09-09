@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.09.20.24
+// @version        2026.09.09.20.39
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -275,6 +275,10 @@
     }, INTERACTION_INTERVAL);
   };
 
+  const deleteAll = () => {
+    deleteVideoMatches(() => queryVideo());
+  };
+
   const saveGridToWatchLater = () => {
     const videos = document.querySelectorAll(
       '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
@@ -323,11 +327,13 @@
       'tp-yt-iron-dropdown { opacity: 0 !important; }';
 
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
+    unsafeWindow.deleteAll = deleteAll;
     unsafeWindow.deleteByText = deleteByText;
     unsafeWindow.deleteDuplicates = deleteDuplicates;
     unsafeWindow.deleteUnavailable = deleteUnavailable;
     unsafeWindow.deleteWatched = deleteWatched;
     unsafeWindow.saveGridToWatchLater = saveGridToWatchLater;
+    unsafeWindow.savePlaylistToWatchLater = savePlaylistToWatchLater;
     unsafeWindow.saveToWatchLaterByText = saveToWatchLaterByText;
 
     GM_registerMenuCommand(
@@ -337,6 +343,7 @@
     GM_registerMenuCommand('Delete watched videos', deleteWatched);
     GM_registerMenuCommand('Delete duplicate videos', deleteDuplicates);
     GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
+    GM_registerMenuCommand('Delete all videos', deleteAll);
     GM_registerMenuCommand(
       'Save playlist to Watch Later',
       savePlaylistToWatchLater,
