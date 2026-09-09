@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.09.20.39
+// @version        2026.09.09.23.48
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -276,7 +276,11 @@
   };
 
   const deleteAll = () => {
-    deleteVideoMatches(() => queryVideo());
+    if (
+      confirm('Are you sure you want to delete all videos from this playlist?')
+    ) {
+      deleteVideoMatches(() => queryVideo());
+    }
   };
 
   const saveGridToWatchLater = () => {
