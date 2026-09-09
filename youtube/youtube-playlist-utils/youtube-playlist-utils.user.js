@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.08.20.27
+// @version        2026.09.09.20.24
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -16,6 +16,8 @@
   'use strict';
 
   const INTERACTION_INTERVAL = 125;
+
+  const NOT_SAVED_TO_WATCH_LATER = ':not(.saved-to-watch-later)';
 
   let intervalId;
 
@@ -138,8 +140,10 @@
         clearInterval(intervalId);
         setDropdownsHidden(false);
         document
-          .querySelectorAll('.watch-later-saved')
-          .forEach((element) => element.classList.remove('watch-later-saved'));
+          .querySelectorAll('.saved-to-watch-later')
+          .forEach((element) =>
+            element.classList.remove('saved-to-watch-later'),
+          );
         console.info(`Finished ${action} matches.`);
         return;
       }
@@ -167,7 +171,7 @@
         console.info(
           `Saving "${payload.title.innerText}" to Watch Later (${payload.anchor.href})`,
         );
-        payload.match.classList.add('watch-later-saved');
+        payload.match.classList.add('saved-to-watch-later');
         payload.button.click();
         return true;
       },
@@ -222,8 +226,12 @@
 
   const saveToWatchLaterByText = (...texts) => {
     saveToWatchLaterVideoMatches(() =>
-      findVideoByText(queryVideos(':not(.watch-later-saved)'), texts),
+      findVideoByText(queryVideos(NOT_SAVED_TO_WATCH_LATER), texts),
     );
+  };
+
+  const savePlaylistToWatchLater = () => {
+    saveToWatchLaterVideoMatches(() => queryVideo(NOT_SAVED_TO_WATCH_LATER));
   };
 
   const deleteByText = (...texts) => {
@@ -330,9 +338,10 @@
     GM_registerMenuCommand('Delete duplicate videos', deleteDuplicates);
     GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
     GM_registerMenuCommand(
-      'Save from grid to Watch Later',
-      saveGridToWatchLater,
+      'Save playlist to Watch Later',
+      savePlaylistToWatchLater,
     );
+    GM_registerMenuCommand('Save grid to Watch Later', saveGridToWatchLater);
 
     bindForwardButton();
   };
