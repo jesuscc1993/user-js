@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.09.23.48
+// @version        2026.09.13.01.47
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -34,7 +34,7 @@
 
     badges.forEach((el) => {
       if (el.innerText.includes(':')) {
-        const timeString = el.innerText.replace(/\s*/g, '').split(':');
+        const timeString = el.innerText.trim().replace(/\s*/g, '').split(':');
         if (timeString.length) seconds += parseInt(timeString.pop(), 10);
         if (timeString.length) seconds += parseInt(timeString.pop(), 10) * 60;
         if (timeString.length) seconds += parseInt(timeString.pop(), 10) * 3600;
@@ -79,15 +79,17 @@
     }
 
     const playlistLength = getPlaylistLength();
+    const avgLength =
+      playlistLength.videos > 0
+        ? Math.round(playlistLength.seconds / playlistLength.videos)
+        : 0;
     console.log(`Extra playlist stats:
   Videos:
     ${playlistLength.videos}
   Length:
     ${formatLength(playlistLength.seconds)}
   Length on average:
-    ${formatLength(
-      Math.round(playlistLength.seconds / playlistLength.videos),
-    )}`);
+    ${formatLength(avgLength)}`);
     durationElement.innerText = `Duration: ${formatLength(
       playlistLength.seconds,
     )} `;
@@ -129,36 +131,42 @@
     setDropdownsHidden(true);
 
     intervalId = setInterval(() => {
-      const dropdownItem = queryDropdownItem();
-      if (dropdownItem) {
-        dropdownItem.click();
-        return;
-      }
+      try {
+        const dropdownItem = queryDropdownItem();
+        if (dropdownItem) {
+          dropdownItem.click();
+          return;
+        }
 
-      const match = queryMatch();
-      if (!match) {
+        const match = queryMatch();
+        if (!match) {
+          clearInterval(intervalId);
+          setDropdownsHidden(false);
+          document
+            .querySelectorAll('.saved-to-watch-later')
+            .forEach((element) =>
+              element.classList.remove('saved-to-watch-later'),
+            );
+          console.info(`Finished ${action} matches.`);
+          return;
+        }
+
+        const title = match.querySelector('#video-title');
+        const anchor = match.querySelector('a[href]');
+        const button = match.querySelector('ytd-menu-renderer button');
+        const callbackPayload =
+          title && anchor && button ? { match, title, anchor, button } : null;
+
+        if (!callbackPayload || !processMatch(callbackPayload)) {
+          clearInterval(intervalId);
+          setDropdownsHidden(false);
+          console.warn(`Aborted ${action} matches: unable to process video.`);
+          return;
+        }
+      } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        document
-          .querySelectorAll('.saved-to-watch-later')
-          .forEach((element) =>
-            element.classList.remove('saved-to-watch-later'),
-          );
-        console.info(`Finished ${action} matches.`);
-        return;
-      }
-
-      const title = match.querySelector('#video-title');
-      const anchor = match.querySelector('a[href]');
-      const button = match.querySelector('ytd-menu-renderer button');
-      const callbackPayload =
-        title && anchor && button ? { match, title, anchor, button } : null;
-
-      if (!callbackPayload || !processMatch(callbackPayload)) {
-        clearInterval(intervalId);
-        setDropdownsHidden(false);
-        console.warn(`Aborted ${action} matches: unable to process video.`);
-        return;
+        console.error(`Error during ${action} matches:`, error);
       }
     }, INTERACTION_INTERVAL);
   };
@@ -169,7 +177,7 @@
       queryDropdownSaveToWatchLaterItem,
       (payload) => {
         console.info(
-          `Saving "${payload.title.innerText}" to Watch Later (${payload.anchor.href})`,
+          `Saving "${payload.title.innerText.trim()}" to Watch Later (${payload.anchor.href})`,
         );
         payload.match.classList.add('saved-to-watch-later');
         payload.button.click();
@@ -185,7 +193,7 @@
       queryDropdownDeleteItem,
       (payload) => {
         console.info(
-          `Deleting "${payload.title.innerText}" (${payload.anchor.href})`,
+          `Deleting "${payload.title.innerText.trim()}" (${payload.anchor.href})`,
         );
         payload.button.click();
         return true;
@@ -211,7 +219,7 @@
   const findVideoByText = (videos, texts) => {
     return Array.from(videos).find((el) => {
       const titleEl = el.querySelector('#video-title');
-      const title = titleEl?.innerText.normalize('NFKC').toLowerCase();
+      const title = titleEl?.innerText.trim().normalize('NFKC').toLowerCase();
       return texts.some((text) => title?.includes(text.toLowerCase()));
     });
   };
@@ -243,9 +251,13 @@
       const videos = Array.from(queryVideos());
       const seen = new Set();
       return videos.find((el) => {
-        const href = el.querySelector('#video-title').href;
+        const titleEl = el.querySelector('#video-title');
+        if (!titleEl) return false;
+
+        const href = titleEl.href;
         const id = new URL(href).searchParams.get('v');
         if (seen.has(id)) return true;
+
         seen.add(id);
         return false;
       });
@@ -257,20 +269,26 @@
     setDropdownsHidden(true);
 
     intervalId = setInterval(() => {
-      let element =
-        document.querySelector(
-          'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)',
-        ) ||
-        document.querySelector(
-          'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
-        );
+      try {
+        let element =
+          document.querySelector(
+            'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)',
+          ) ||
+          document.querySelector(
+            'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
+          );
 
-      if (element) {
-        element.click();
-      } else {
+        if (element) {
+          element.click();
+        } else {
+          clearInterval(intervalId);
+          setDropdownsHidden(false);
+          console.info('Finished deleting unavailable videos.');
+        }
+      } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.info('Finished deleting unavailable videos.');
+        console.error('Error deleting unavailable videos:', error);
       }
     }, INTERACTION_INTERVAL);
   };
@@ -294,26 +312,32 @@
 
     let i = 0;
     intervalId = setInterval(() => {
-      let element = document.querySelector(
-        'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)',
-      );
-
-      while (!element && i < videos.length) {
-        const button = videos[i++].querySelector(
-          '.ytLockupMetadataViewModelMenuButton button',
+      try {
+        let element = document.querySelector(
+          'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)',
         );
-        if (button) {
-          element = button;
-          break;
-        }
-      }
 
-      if (element) {
-        element.click();
-      } else {
+        while (!element && i < videos.length) {
+          const button = videos[i++].querySelector(
+            '.ytLockupMetadataViewModelMenuButton button',
+          );
+          if (button) {
+            element = button;
+            break;
+          }
+        }
+
+        if (element) {
+          element.click();
+        } else {
+          clearInterval(intervalId);
+          setDropdownsHidden(false);
+          console.info('Finished saving to Watch Later.');
+        }
+      } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.info('Finished saving to Watch Later.');
+        console.error('Error saving to Watch Later:', error);
       }
     }, INTERACTION_INTERVAL);
   };
