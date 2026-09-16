@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.16.11.25
+// @version        2026.09.16.12.27
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @grant          GM_registerMenuCommand
+// @grant          GM_notification
 
 // @icon           https://www.youtube.com/favicon.ico
 // @match          https://www.youtube.com/*
@@ -17,7 +18,9 @@
 
   const INTERACTION_INTERVAL = 125;
 
-  const NOT_SAVED_TO_WATCH_LATER = ':not(.saved-to-watch-later)';
+  const PROCESSED_VIDEO_CLASS = 'mt-processed';
+  const PROCESSED_VIDEO_QUERY = `.${PROCESSED_VIDEO_CLASS}`;
+  const UNPROCESSED_VIDEO_QUERY = `:not(${PROCESSED_VIDEO_QUERY})`;
 
   let intervalId;
 
@@ -121,6 +124,8 @@
     processMatch,
     action,
   ) => {
+    console.log(`Started ${action}...`);
+
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
@@ -137,11 +142,12 @@
           clearInterval(intervalId);
           setDropdownsHidden(false);
           document
-            .querySelectorAll('.saved-to-watch-later')
+            .querySelectorAll(PROCESSED_VIDEO_QUERY)
             .forEach((element) =>
-              element.classList.remove('saved-to-watch-later'),
+              element.classList.remove(PROCESSED_VIDEO_CLASS),
             );
-          console.info(`Finished ${action} matches.`);
+
+          notify('Finished', `Finished ${action}.`);
           return;
         }
 
@@ -156,13 +162,13 @@
         if (!callbackPayload || !processMatch(callbackPayload)) {
           clearInterval(intervalId);
           setDropdownsHidden(false);
-          console.warn(`Aborted ${action} matches: unable to process video.`);
+          console.warn(`Aborted ${action}: unable to process video.`);
           return;
         }
       } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.error(`Error during ${action} matches:`, error);
+        notify('Error', `Error ${action}.`, `Error ${action}: ${error}`);
       }
     }, INTERACTION_INTERVAL);
   };
@@ -175,11 +181,11 @@
         console.info(
           `Saving "${payload.titleEl.innerText.trim()}" to Watch Later (${payload.anchorEl.href})`,
         );
-        payload.matchEl.classList.add('saved-to-watch-later');
+        payload.matchEl.classList.add(PROCESSED_VIDEO_CLASS);
         payload.buttonEl.click();
         return true;
       },
-      'saving',
+      'saving to Watch Later',
     );
   };
 
@@ -194,7 +200,7 @@
         payload.buttonEl.click();
         return true;
       },
-      'deleting',
+      'deleting video matches',
     );
   };
 
@@ -230,12 +236,12 @@
 
   const saveToWatchLaterByText = (...texts) => {
     saveToWatchLaterVideoMatches(() =>
-      findVideoByText(queryVideos(NOT_SAVED_TO_WATCH_LATER), texts),
+      findVideoByText(queryVideos(UNPROCESSED_VIDEO_QUERY), texts),
     );
   };
 
   const savePlaylistToWatchLater = () => {
-    saveToWatchLaterVideoMatches(() => queryVideo(NOT_SAVED_TO_WATCH_LATER));
+    saveToWatchLaterVideoMatches(() => queryVideo(UNPROCESSED_VIDEO_QUERY));
   };
 
   const deleteByText = (...texts) => {
@@ -262,6 +268,8 @@
   };
 
   const deleteUnavailable = () => {
+    const action = 'deleting unavailable videos';
+
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
@@ -280,12 +288,12 @@
         } else {
           clearInterval(intervalId);
           setDropdownsHidden(false);
-          console.info('Finished deleting unavailable videos.');
+          notify('Finished', `Finished ${action}.`);
         }
       } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.error('Error deleting unavailable videos:', error);
+        notify('Error', `Error ${action}.`, `Error ${action}: ${error}`);
       }
     }, INTERACTION_INTERVAL);
   };
@@ -299,6 +307,8 @@
   };
 
   const saveGridToWatchLater = () => {
+    const action = 'saving grid to Watch Later';
+
     const videos = document.querySelectorAll(
       '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
     );
@@ -329,14 +339,19 @@
         } else {
           clearInterval(intervalId);
           setDropdownsHidden(false);
-          console.info('Finished saving to Watch Later.');
+          notify('Finished', `Finished ${action}.`);
         }
       } catch (error) {
         clearInterval(intervalId);
         setDropdownsHidden(false);
-        console.error('Error saving to Watch Later:', error);
+        notify('Error', `Error ${action}.`, `Error ${action}: ${error}`);
       }
     }, INTERACTION_INTERVAL);
+  };
+
+  const notify = (title, text, log = text) => {
+    console.info(log);
+    GM_notification({ title, text });
   };
 
   const initialize = () => {
