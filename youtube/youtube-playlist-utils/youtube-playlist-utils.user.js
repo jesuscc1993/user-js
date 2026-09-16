@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.13.01.47
+// @version        2026.09.16.11.13
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -254,7 +254,8 @@
         const titleEl = el.querySelector('#video-title');
         if (!titleEl) return false;
 
-        const href = titleEl.href;
+        const anchorEl = el.querySelector('a[href^="/watch"]');
+        const href = anchorEl.href;
         const id = new URL(href).searchParams.get('v');
         if (seen.has(id)) return true;
 
