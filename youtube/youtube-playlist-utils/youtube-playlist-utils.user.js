@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.16.11.13
+// @version        2026.09.16.11.25
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -22,8 +22,8 @@
   let intervalId;
 
   let hiddenDropdownsStyle;
-  let durationElement;
-  let extraStatsElement;
+  let durationEl;
+  let extraStatsEl;
 
   const getPlaylistLength = () => {
     let seconds = 0;
@@ -69,13 +69,9 @@
   };
 
   const calculateExtraPlaylistStats = () => {
-    const containerElement = document.querySelector(
-      'ytd-playlist-byline-renderer',
-    );
-    if (containerElement && !containerElement.querySelector('.extra-stats')) {
-      containerElement
-        .querySelector('.metadata-stats')
-        .prepend(extraStatsElement);
+    const containerEl = document.querySelector('ytd-playlist-byline-renderer');
+    if (containerEl && !containerEl.querySelector('.extra-stats')) {
+      containerEl.querySelector('.metadata-stats').prepend(extraStatsEl);
     }
 
     const playlistLength = getPlaylistLength();
@@ -90,9 +86,7 @@
     ${formatLength(playlistLength.seconds)}
   Length on average:
     ${formatLength(avgLength)}`);
-    durationElement.innerText = `Duration: ${formatLength(
-      playlistLength.seconds,
-    )} `;
+    durationEl.innerText = `Duration: ${formatLength(playlistLength.seconds)} `;
   };
 
   const setDropdownsHidden = (hidden) => {
@@ -132,14 +126,14 @@
 
     intervalId = setInterval(() => {
       try {
-        const dropdownItem = queryDropdownItem();
-        if (dropdownItem) {
-          dropdownItem.click();
+        const dropdownItemEl = queryDropdownItem();
+        if (dropdownItemEl) {
+          dropdownItemEl.click();
           return;
         }
 
-        const match = queryMatch();
-        if (!match) {
+        const matchEl = queryMatch();
+        if (!matchEl) {
           clearInterval(intervalId);
           setDropdownsHidden(false);
           document
@@ -151,11 +145,13 @@
           return;
         }
 
-        const title = match.querySelector('#video-title');
-        const anchor = match.querySelector('a[href]');
-        const button = match.querySelector('ytd-menu-renderer button');
+        const titleEl = matchEl.querySelector('#video-title');
+        const anchorEl = matchEl.querySelector('a[href^="/watch"]');
+        const buttonEl = matchEl.querySelector('ytd-menu-renderer button');
         const callbackPayload =
-          title && anchor && button ? { match, title, anchor, button } : null;
+          titleEl && anchorEl && buttonEl
+            ? { matchEl, titleEl, anchorEl, buttonEl }
+            : null;
 
         if (!callbackPayload || !processMatch(callbackPayload)) {
           clearInterval(intervalId);
@@ -177,10 +173,10 @@
       queryDropdownSaveToWatchLaterItem,
       (payload) => {
         console.info(
-          `Saving "${payload.title.innerText.trim()}" to Watch Later (${payload.anchor.href})`,
+          `Saving "${payload.titleEl.innerText.trim()}" to Watch Later (${payload.anchorEl.href})`,
         );
-        payload.match.classList.add('saved-to-watch-later');
-        payload.button.click();
+        payload.matchEl.classList.add('saved-to-watch-later');
+        payload.buttonEl.click();
         return true;
       },
       'saving',
@@ -193,9 +189,9 @@
       queryDropdownDeleteItem,
       (payload) => {
         console.info(
-          `Deleting "${payload.title.innerText.trim()}" (${payload.anchor.href})`,
+          `Deleting "${payload.titleEl.innerText.trim()}" (${payload.anchorEl.href})`,
         );
-        payload.button.click();
+        payload.buttonEl.click();
         return true;
       },
       'deleting',
@@ -217,8 +213,8 @@
   };
 
   const findVideoByText = (videos, texts) => {
-    return Array.from(videos).find((el) => {
-      const titleEl = el.querySelector('#video-title');
+    return Array.from(videos).find((videoEl) => {
+      const titleEl = videoEl.querySelector('#video-title');
       const title = titleEl?.innerText.trim().normalize('NFKC').toLowerCase();
       return texts.some((text) => title?.includes(text.toLowerCase()));
     });
@@ -252,9 +248,9 @@
       const seen = new Set();
       return videos.find((el) => {
         const titleEl = el.querySelector('#video-title');
-        if (!titleEl) return false;
-
         const anchorEl = el.querySelector('a[href^="/watch"]');
+        if (!(titleEl && anchorEl)) return false;
+
         const href = anchorEl.href;
         const id = new URL(href).searchParams.get('v');
         if (seen.has(id)) return true;
@@ -271,7 +267,7 @@
 
     intervalId = setInterval(() => {
       try {
-        let element =
+        let elementEl =
           document.querySelector(
             'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)',
           ) ||
@@ -279,8 +275,8 @@
             'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
           );
 
-        if (element) {
-          element.click();
+        if (elementEl) {
+          elementEl.click();
         } else {
           clearInterval(intervalId);
           setDropdownsHidden(false);
@@ -314,22 +310,22 @@
     let i = 0;
     intervalId = setInterval(() => {
       try {
-        let element = document.querySelector(
+        let elementEl = document.querySelector(
           'tp-yt-iron-dropdown:not([style*="display: none;"]) yt-list-item-view-model:nth-child(2)',
         );
 
-        while (!element && i < videos.length) {
+        while (!elementEl && i < videos.length) {
           const button = videos[i++].querySelector(
             '.ytLockupMetadataViewModelMenuButton button',
           );
           if (button) {
-            element = button;
+            elementEl = button;
             break;
           }
         }
 
-        if (element) {
-          element.click();
+        if (elementEl) {
+          elementEl.click();
         } else {
           clearInterval(intervalId);
           setDropdownsHidden(false);
@@ -344,12 +340,12 @@
   };
 
   const initialize = () => {
-    durationElement = document.createElement('span');
+    durationEl = document.createElement('span');
 
-    extraStatsElement = document.createElement('span');
-    extraStatsElement.className =
+    extraStatsEl = document.createElement('span');
+    extraStatsEl.className =
       'extra-stats byline-item style-scope ytd-playlist-byline-renderer';
-    extraStatsElement.appendChild(durationElement);
+    extraStatsEl.appendChild(durationEl);
 
     hiddenDropdownsStyle = document.createElement('style');
     hiddenDropdownsStyle.textContent =
