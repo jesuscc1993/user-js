@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.16.12.27
+// @version        2026.09.16.12.28
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -349,9 +349,9 @@
     }, INTERACTION_INTERVAL);
   };
 
-  const notify = (title, text, log = text) => {
+  const notify = (title, text, log = text, timeout = 3000) => {
     console.info(log);
-    GM_notification({ title, text });
+    GM_notification({ title, text, timeout });
   };
 
   const initialize = () => {
