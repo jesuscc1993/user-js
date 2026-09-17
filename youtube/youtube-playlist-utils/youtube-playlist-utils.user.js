@@ -98,6 +98,11 @@
       : hiddenDropdownsStyle.remove();
   };
 
+  const scrollToBottom = () => {
+    const app = document.querySelector('ytd-app');
+    window.scrollTo(0, app.scrollHeight);
+  };
+
   const queryDropdownSaveToWatchLaterItem = () => {
     return document.querySelector(
       'tp-yt-iron-dropdown:not([style*="display: none;"]):has(:nth-child(8)) ytd-menu-service-item-renderer:nth-child(2)',
@@ -126,6 +131,7 @@
   ) => {
     console.log(`Started ${action}...`);
 
+    scrollToBottom();
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
@@ -270,6 +276,7 @@
   const deleteUnavailable = () => {
     const action = 'deleting unavailable videos';
 
+    scrollToBottom();
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
