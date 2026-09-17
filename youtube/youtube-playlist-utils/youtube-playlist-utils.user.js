@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.18.00.58
+// @version        2026.09.18.01.36
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @grant          GM_registerMenuCommand
 // @grant          GM_notification
 
-// @icon           https://www.youtube.com/favicon.ico
+// @icon           https://www.youtube.com/s/desktop/95e3a3fe/img/favicon.ico
 // @match          https://www.youtube.com/*
 
 // ==/UserScript==
