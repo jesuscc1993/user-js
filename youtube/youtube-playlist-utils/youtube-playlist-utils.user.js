@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.16.12.28
+// @version        2026.09.18.00.58
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -98,9 +98,14 @@
       : hiddenDropdownsStyle.remove();
   };
 
-  const scrollToBottom = () => {
-    const app = document.querySelector('ytd-app');
-    window.scrollTo(0, app.scrollHeight);
+  const scrollToBottomAndBack = () => {
+    const app = document.querySelector(
+      'ytd-app:has(ytd-browse:not([hidden]) .ytd-playlist-video-list-renderer)',
+    );
+    if (app) {
+      window.scrollTo(0, app.scrollHeight);
+      setTimeout(() => window.scrollTo(0, 0), INTERACTION_INTERVAL);
+    }
   };
 
   const queryDropdownSaveToWatchLaterItem = () => {
@@ -131,7 +136,7 @@
   ) => {
     console.log(`Started ${action}...`);
 
-    scrollToBottom();
+    scrollToBottomAndBack();
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
@@ -276,7 +281,7 @@
   const deleteUnavailable = () => {
     const action = 'deleting unavailable videos';
 
-    scrollToBottom();
+    scrollToBottomAndBack();
     clearInterval(intervalId);
     setDropdownsHidden(true);
 
