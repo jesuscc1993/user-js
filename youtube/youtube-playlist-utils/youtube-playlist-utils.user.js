@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.18.01.36
+// @version        2026.09.25.17.33
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -389,18 +389,18 @@
     unsafeWindow.saveToWatchLaterByText = saveToWatchLaterByText;
 
     GM_registerMenuCommand(
-      'Calculate playlist duration',
+      '🕓 Calculate playlist duration',
       calculateExtraPlaylistStats,
     );
-    GM_registerMenuCommand('Delete watched videos', deleteWatched);
-    GM_registerMenuCommand('Delete duplicate videos', deleteDuplicates);
-    GM_registerMenuCommand('Delete unavailable videos', deleteUnavailable);
-    GM_registerMenuCommand('Delete all videos', deleteAll);
+    GM_registerMenuCommand('🗑️ Delete watched videos', deleteWatched);
+    GM_registerMenuCommand('🗑️ Delete duplicate videos', deleteDuplicates);
+    GM_registerMenuCommand('🗑️ Delete unavailable videos', deleteUnavailable);
+    GM_registerMenuCommand('🗑️ Delete all videos', deleteAll);
     GM_registerMenuCommand(
-      'Save playlist to Watch Later',
+      '💾 Save playlist to Watch Later',
       savePlaylistToWatchLater,
     );
-    GM_registerMenuCommand('Save grid to Watch Later', saveGridToWatchLater);
+    GM_registerMenuCommand('💾 Save grid to Watch Later', saveGridToWatchLater);
 
     bindForwardButton();
   };
