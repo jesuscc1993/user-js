@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.25.17.33
+// @version        2026.09.29.18.26
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -18,6 +18,7 @@
 
   const INTERACTION_INTERVAL = 125;
 
+  const BASE_SELECTOR = '.ytd-page-manager:not([hidden])';
   const PROCESSED_VIDEO_CLASS = 'mt-processed';
   const PROCESSED_VIDEO_QUERY = `.${PROCESSED_VIDEO_CLASS}`;
   const UNPROCESSED_VIDEO_QUERY = `:not(${PROCESSED_VIDEO_QUERY})`;
@@ -32,7 +33,7 @@
     let seconds = 0;
 
     const badges = document.querySelectorAll(
-      'ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .ytBadgeShapeText',
+      `${BASE_SELECTOR} ytd-playlist-video-list-renderer ytd-thumbnail-overlay-time-status-renderer .ytBadgeShapeText`,
     );
 
     badges.forEach((el) => {
@@ -72,7 +73,7 @@
   };
 
   const calculateExtraPlaylistStats = () => {
-    const containerEl = document.querySelector('ytd-playlist-byline-renderer');
+    const containerEl = document.querySelector(`${BASE_SELECTOR} ytd-playlist-byline-renderer`);
     if (containerEl && !containerEl.querySelector('.extra-stats')) {
       containerEl.querySelector('.metadata-stats').prepend(extraStatsEl);
     }
@@ -153,7 +154,7 @@
           clearInterval(intervalId);
           setDropdownsHidden(false);
           document
-            .querySelectorAll(PROCESSED_VIDEO_QUERY)
+            .querySelectorAll(`${BASE_SELECTOR} ${PROCESSED_VIDEO_QUERY}`)
             .forEach((element) =>
               element.classList.remove(PROCESSED_VIDEO_CLASS),
             );
@@ -217,15 +218,15 @@
 
   const queryVideo = (subQuery = '') => {
     return document.querySelector(`
-      ytd-playlist-video-renderer${subQuery},
-      ytd-playlist-panel-video-renderer${subQuery}
+      ${BASE_SELECTOR} ytd-playlist-video-renderer${subQuery},
+      ${BASE_SELECTOR} ytd-playlist-panel-video-renderer${subQuery}
     `);
   };
 
   const queryVideos = (subQuery = '') => {
     return document.querySelectorAll(`
-      ytd-playlist-video-renderer${subQuery},
-      ytd-playlist-panel-video-renderer${subQuery}
+      ${BASE_SELECTOR} ytd-playlist-video-renderer${subQuery},
+      ${BASE_SELECTOR} ytd-playlist-panel-video-renderer${subQuery}
     `);
   };
 
@@ -292,7 +293,7 @@
             'tp-yt-iron-dropdown:not([style*="display: none;"]) ytd-menu-service-item-renderer:nth-child(1)',
           ) ||
           document.querySelector(
-            'ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button',
+            `${BASE_SELECTOR} ytd-playlist-video-renderer:has([src="https://i.ytimg.com/img/no_thumbnail.jpg"]) ytd-menu-renderer button`,
           );
 
         if (elementEl) {
@@ -322,9 +323,12 @@
     const action = 'saving grid to Watch Later';
 
     const videos = document.querySelectorAll(
-      '#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))',
+      `#contents > ytd-rich-item-renderer.ytd-rich-grid-renderer:not(:has(:where(.ytd-thumbnail-overlay-resume-playback-renderer, .ytThumbnailOverlayProgressBarHost)))`,
     );
-    if (!videos.length) return;
+    if (!videos.length) {
+      notify('Error', `Error ${action}: No videos found.`);
+      return;
+    }
 
     clearInterval(intervalId);
     setDropdownsHidden(true);
@@ -411,11 +415,11 @@
       (e) => {
         if (e.button === 4) {
           const currentVideoEl = document.querySelector(
-            'ytd-playlist-panel-video-renderer[selected]',
+            `${BASE_SELECTOR} ytd-playlist-panel-video-renderer[selected]`,
           );
           const nextEl = currentVideoEl
             ? currentVideoEl?.nextElementSibling?.querySelector('a')
-            : document.querySelector('.ytp-next-button');
+            : document.querySelector(`${BASE_SELECTOR} .ytp-next-button`);
           nextEl ? nextEl.click() : history.forward();
         }
       },
