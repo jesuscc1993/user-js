@@ -7,8 +7,7 @@ const REPO_OWNER = 'jesuscc1993';
 const REPO_NAME = 'user-js';
 const MAIN_REPO_BRANCH = 'master';
 
-const isExcluded = (name) =>
-  name.startsWith('.') || name.startsWith('_') || name.includes('(broken)');
+const isExcluded = (name) => name.startsWith('.') || name.startsWith('_');
 
 const getSubDirectories = (dirPath) =>
   fs
