@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2026.06.07.12.31
+// @version        2026.10.02.13.41
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -105,20 +105,27 @@
   };
 
   const getTitle = () => {
-    const enTitle = jQuery('.data-set')
-      .filter(function () {
-        return jQuery(this).find('.type').text().trim() == 'English';
-      })
+    const format = getDataSetValue('Format')?.text();
+    const notJp = ['Korean', 'Chinese', 'Taiwanese'].some((type) =>
+      format.includes(type),
+    );
+    const enTitle = getDataSetValue('English')?.text();
+    const title = jQuery('h1')?.text();
+    return sanitizeTitle(notJp && enTitle ? enTitle : title);
+  };
+
+  const getDataSetValue = (type) => {
+    return jQuery('.data-set')
+      .filter((_, e) => jQuery(e).find('.type').text() === type)
       .find('.value');
-    const title = jQuery('h1');
-    return (enTitle.length ? enTitle : title)
-      .text()
-      .replace(/\s+/g, ' ')
-      .replace(/(^\s+| - |:|!|\s+$)/g, '');
   };
 
   const getEncodedTitle = () => {
     return encodeURI(getTitle()).replace(/%20/g, '+').replace(/&/g, '%26');
+  };
+
+  const sanitizeTitle = (title) => {
+    return title.replace(/\s+/g, ' ').replace(/(^\s+| - |:|!|\s+$)/g, '');
   };
 
   const getMediaType = () => {
