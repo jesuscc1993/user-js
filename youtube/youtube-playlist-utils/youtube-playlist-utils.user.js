@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name           YouTube - Playlist Utils
 // @description    Adds a length calculation to playlists.
-// @version        2026.09.29.18.26
+// @version        2026.10.26.10.49
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
 // @grant          GM_registerMenuCommand
 // @grant          GM_notification
+// @grant          GM_getValue
+// @grant          GM_setValue
 
 // @icon           https://www.youtube.com/s/desktop/95e3a3fe/img/favicon.ico
 // @match          https://www.youtube.com/*
@@ -73,7 +75,9 @@
   };
 
   const calculateExtraPlaylistStats = () => {
-    const containerEl = document.querySelector(`${BASE_SELECTOR} ytd-playlist-byline-renderer`);
+    const containerEl = document.querySelector(
+      `${BASE_SELECTOR} ytd-playlist-byline-renderer`,
+    );
     if (containerEl && !containerEl.querySelector('.extra-stats')) {
       containerEl.querySelector('.metadata-stats').prepend(extraStatsEl);
     }
@@ -256,6 +260,67 @@
     saveToWatchLaterVideoMatches(() => queryVideo(UNPROCESSED_VIDEO_QUERY));
   };
 
+  const normalizeBlacklistTerm = (text) =>
+    String(text).trim().normalize('NFKC').toLowerCase();
+
+  const getBlacklist = () => GM_getValue('blacklist', []);
+
+  const setBlacklist = (terms) => GM_setValue('blacklist', terms);
+
+  const saveToBlacklist = (...texts) => {
+    const blacklist = getBlacklist();
+    const terms = texts.map(normalizeBlacklistTerm).filter(Boolean);
+    const updatedBlacklist = [...new Set([...blacklist, ...terms])];
+
+    setBlacklist(updatedBlacklist);
+
+    notify(
+      'Blacklist updated',
+      `Added ${updatedBlacklist.length - blacklist.length} term(s) to the blacklist.`,
+    );
+  };
+
+  const promptAndSaveToBlacklist = () => {
+    const input = prompt('Enter blacklist terms, separated by commas:');
+    if (input === null) return;
+
+    saveToBlacklist(...input.split(','));
+  };
+
+  const removeFromBlacklist = (...texts) => {
+    const terms = new Set(texts.map(normalizeBlacklistTerm).filter(Boolean));
+    const blacklist = getBlacklist();
+    const updatedBlacklist = blacklist.filter((term) => !terms.has(term));
+
+    setBlacklist(updatedBlacklist);
+
+    notify(
+      'Blacklist updated',
+      `Removed ${blacklist.length - updatedBlacklist.length} term(s) from the blacklist.`,
+    );
+  };
+
+  const promptAndRemoveFromBlacklist = () => {
+    const input = prompt(
+      'Enter blacklist terms to remove, separated by commas:',
+    );
+    if (input === null) return;
+
+    removeFromBlacklist(...input.split(','));
+  };
+
+  const deleteBlacklisted = () => {
+    const blacklist = getBlacklist();
+    if (!blacklist.length) {
+      notify('Blacklist empty', 'Add terms with saveToBlacklist first.');
+      return;
+    }
+
+    deleteVideoMatches(() =>
+      findVideoByText(queryVideos(UNPROCESSED_VIDEO_QUERY), blacklist),
+    );
+  };
+
   const deleteByText = (...texts) => {
     deleteVideoMatches(() => findVideoByText(queryVideos(), texts));
   };
@@ -385,6 +450,9 @@
     unsafeWindow.calculateExtraPlaylistStats = calculateExtraPlaylistStats;
     unsafeWindow.deleteAll = deleteAll;
     unsafeWindow.deleteByText = deleteByText;
+    unsafeWindow.deleteBlacklisted = deleteBlacklisted;
+    unsafeWindow.removeFromBlacklist = removeFromBlacklist;
+    unsafeWindow.saveToBlacklist = saveToBlacklist;
     unsafeWindow.deleteDuplicates = deleteDuplicates;
     unsafeWindow.deleteUnavailable = deleteUnavailable;
     unsafeWindow.deleteWatched = deleteWatched;
@@ -400,6 +468,15 @@
     GM_registerMenuCommand('🗑️ Delete duplicate videos', deleteDuplicates);
     GM_registerMenuCommand('🗑️ Delete unavailable videos', deleteUnavailable);
     GM_registerMenuCommand('🗑️ Delete all videos', deleteAll);
+    GM_registerMenuCommand(
+      '🏷️ Add terms to blacklist',
+      promptAndSaveToBlacklist,
+    );
+    GM_registerMenuCommand(
+      '🏷️ Remove terms from blacklist',
+      promptAndRemoveFromBlacklist,
+    );
+    GM_registerMenuCommand('🗑️ Delete blacklisted videos', deleteBlacklisted);
     GM_registerMenuCommand(
       '💾 Save playlist to Watch Later',
       savePlaylistToWatchLater,
