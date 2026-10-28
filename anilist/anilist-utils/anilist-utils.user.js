@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           AniList - Utils
 // @description    Provides additional features
-// @version        2026.10.02.13.41
+// @version        2026.10.28.12.17
 // @author         MetalTxus
 // @namespace      https://github.com/jesuscc1993
 
@@ -17,6 +17,23 @@
 
 (() => {
   'use strict';
+
+  const TIMEOUT_MS = 1000;
+  const INTERVAL_MS = 1000;
+
+  const replaceTitle = () => {
+    const isJp = isJpMedia();
+    if (!isJp) {
+      const title = jQuery('h1');
+      const enTitle = jQuery(
+        '.data-set:has(.type:contains("English")) .value',
+      )?.text();
+      if (title.length && enTitle) {
+        jQuery('h1').text(enTitle);
+        document.title = `${enTitle} · AniList`;
+      }
+    }
+  };
 
   const generateSearchLinks = () => {
     $imagesAnchor = jQuery(`<a title="Search for images"></a>`);
@@ -105,13 +122,16 @@
   };
 
   const getTitle = () => {
-    const format = getDataSetValue('Format')?.text();
-    const notJp = ['Korean', 'Chinese', 'Taiwanese'].some((type) =>
-      format.includes(type),
-    );
     const enTitle = getDataSetValue('English')?.text();
     const title = jQuery('h1')?.text();
-    return sanitizeTitle(notJp && enTitle ? enTitle : title);
+    return sanitizeTitle(!isJpMedia() && enTitle ? enTitle : title);
+  };
+
+  const isJpMedia = () => {
+    const format = getDataSetValue('Format')?.text();
+    return !['Korean', 'Chinese', 'Taiwanese'].some((type) =>
+      format.includes(type),
+    );
   };
 
   const getDataSetValue = (type) => {
@@ -156,9 +176,9 @@
     jQuery('head').append(style);
 
     generateSearchLinks();
-    setTimeout(addLinkToSearch, 150);
-
-    setInterval(addLinkToSearch, 1000);
+    setInterval(addLinkToSearch, INTERVAL_MS);
+    setTimeout(addLinkToSearch, TIMEOUT_MS);
+    setTimeout(replaceTitle, TIMEOUT_MS);
 
     unsafeWindow.clearActivity = clearActivity;
 
